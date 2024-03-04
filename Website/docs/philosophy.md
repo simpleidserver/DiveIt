@@ -10,3 +10,9 @@ I have decided to create this blog because, quite often, other technical blogs f
 My personal belief is that to become a proficient .NET developer, one must not be afraid of the unknown, be capable of reverse engineering in another programming language, and not remain in one's comfort zone. Developing a critical mindset is a crucial step in a developer's life.
 
 The philosophy of this blog is to provide articles on any development topic or issue that delve into the details of technical implementation, with the aim of giving your readers a comprehensive and detailed view.
+
+**Let's delve together into any technical Subject !**
+
+<div style={{textAlign:"center"}}>
+    <img src="/img/logo.svg" width="200px" />
+</div>
