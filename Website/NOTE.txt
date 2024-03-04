@@ -1,0 +1,6 @@
+TOUT sur le did
+
+Implémenter un algorithme ML en c# (supervisé par exemple), régression linéaire.
+Expliquer une architecture P2P.
+Expliquer comment protéger une application de façon sécurisée (FAPI2.0)
+Développer une application simple, qui va analyser les sentiment newpaper en temps réel.

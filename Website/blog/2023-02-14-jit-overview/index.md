@@ -3,13 +3,14 @@ slug: jit-overview
 title: Part 1 - The magic behind the JIT compiler
 authors: [geekdiver]
 tags: [CLR, JIT, .NET]
+enableComments: true
 ---
 
-import Docsly from '@site/src/components/DocslyComponent';
 import Banner from './images/banner.jpg'
 import Overview from './images/Overview.png';
 import CompileCsharpCode from './images/CompileCsharpCode.png';
 import CompileIlCode from './images/CompileIlCode.png';
+import GiscusComponent from '@site/src/components/GiscusComponent';
 
 <div style={{textAlign: 'center'}}>
     <img src={Banner} />
@@ -139,7 +140,7 @@ Now that the native code has been emitted, the `compileMethod` function returns 
 ## Conclusion
 
 Now that you have a comprehensive understanding of the various components involved in just-in-time compilation, we will describe in the upcoming articles different sections of the DOTNET RUNTIME library that seem interesting to me. 
-Feel free to leave a comment if you have any remarks :)
+Feel free to leave a comment if you have any remarks 😀
 
 ## Resources
 
@@ -153,4 +154,4 @@ Feel free to leave a comment if you have any remarks :)
 | https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/if-conversion-within-dotnet-part-1, If Conversion Within .NET - Part 1 |
 | https://medium.com/@sruthk/cracking-assembly-function-prolog-and-epilog-in-x86-cb3c3461bcd3, Cracking Assembly — Function Prolog and Epilog in x86 |
 
-<Docsly />
+<GiscusComponent />

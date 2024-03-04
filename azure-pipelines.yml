@@ -1,0 +1,51 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  name: Default
+
+steps:
+- checkout: self
+  fetchDepth: 0
+  submodules: true
+  fetchTags: true
+
+- powershell: |
+     $gitVersion = git describe --abbrev=0 --tags
+     $buildNumber = $gitVersion + "." + $env:BUILD_BUILDNUMBER
+     Write-Host "##vso[task.setvariable variable=buildVersion;isoutput=true]$buildNumber"
+     Write-Host "Build number is $buildNumber"
+  name: gitVersion
+
+- task: NodeTool@0
+  inputs:
+    versionSpec: '18.19.x'
+  displayName: 'Install Node.js'
+
+- task: PowerShell@2
+  displayName: 'npm install and build'
+  inputs:
+    targetType: 'inline'
+    script: |
+      npm install
+      npm run build
+    workingDirectory: '$(Build.Repository.LocalPath)\Website'
+
+- task: CopyFiles@2
+  displayName: 'Copy website'
+  inputs:
+    SourceFolder: '$(Build.Repository.LocalPath)\Website\build'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)\Website'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish website artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)\Website'
+    ArtifactName: 'website'
+    publishLocation: 'Container'
