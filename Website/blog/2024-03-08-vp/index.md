@@ -42,9 +42,9 @@ Le processus d'authentification est simple et n'est pas d'une grande complexité
 
 1. L'utilisateur choisit avec quel credential il va s'authentifier, par exemple avec son permis de conduire.
 
-2. Le `verifier` construit une requête d'autorisation, où il indique les `credentials` avec leur méthode d'encryption, qui sont requis pour authentifier l'utilisateur.
+2. Le `verifier` construit une requête d'autorisation, où il indique les `credentials` avec leur méthode d'encryption, qui sont requis pour authentifier l'utilisateur. La requête contient une `presentation definition`, pour plus d'informations sur sa structure, référez-vous à la documentation officielle [DIF](https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-definition).
 
-3. La requête est présentée sous la forme d'un QR Code.
+3. La requête est présentée sous la forme d'un QR Code avec le schéma `openid4vp://`.
 
 4. L'utilisateur ouvre son application mobile et scan le QR code qui est présenté. 
 
@@ -52,7 +52,7 @@ Le processus d'authentification est simple et n'est pas d'une grande complexité
    
    4.2. La `presentation` est signée avec la clef privée du document d'identié distribuée de l'utilisateur.
    
-   4.3 L'application mobile exécute une requête HTTP POST sur le `verifier` en passant le `presentation verifiable`.
+   4.3 L'application mobile exécute une requête HTTP POST sur le `verifier` en passant le `presentation verifiable` ainsi qu'un objet [presentation submission](https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-submission). Cet object permet au portefeuille électronique, d'exprimer les relations entre le `vp_token` et le `presentation definition`, par exemple où se trouve chaque type de `verifiable credential` dans l'object `vp_token`.
 
 Il existe trois façons de retourner le `presentation verifiable`. 
 Nous avons choisi la façon directe `vp_token`. Elle consiste à exécuter une requête HTTP POST vers le verifier en passant le `presentation verifiable` dans le paramètre `vp_token`.
@@ -74,3 +74,5 @@ https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
 https://www.w3.org/TR/vc-data-model/#dfn-verifiable-presentations, Verifiable presentations W3C
 
 https://www.w3.org/TR/vc-data-model/#presentations-0
+
+https://identity.foundation/presentation-exchange/spec/v2.0.0/#presentation-definition, Presentation definition
