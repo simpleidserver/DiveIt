@@ -1,7 +1,20 @@
 import requests
 import pandas as pd
-from bs4 import BeautifulSoup
 import multiprocessing
+import nltk
+import numpy as np
+from nltk.stem import WordNetLemmatizer
+from bs4 import BeautifulSoup
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+stopwords = nltk.corpus.stopwords.words('english')
+lemmatizer = WordNetLemmatizer()
+
+class LemmaCountVectorizer(CountVectorizer):
+    def build_analyzer(self):
+        analyzer = super(LemmaCountVectorizer, self).build_analyzer()
+        return lambda doc: (lemmatizer.lemmatize(w) for w in analyzer(doc))
 
 def read_article(link):
     article_result = requests.get(link['base_url'])
@@ -23,6 +36,24 @@ def download_articles_from_dev_to():
     for link in results:
         df[link['id'], 'Article'] = link['article_content']
     return df
+
+def clean_article(article):
+    article_tokens = nltk.word_tokenize(article)
+    article_tokens_cleaned = [lemmatizer.lemmatize(word) for word in article_tokens if word.lower() not in stopwords]
+
+# 'https://dev.to/lovelacecoding/modern-c-development-record-types-101-55bj'
+def bag_of_word(article):
+    vectoriser = LemmaCountVectorizer(stop_words='english')
+    transform = vectoriser.fit_transform(article)
+    features = vectoriser.get_feature_names_out()
+    count_vec = np.asarray(transform.sum(axis=0)).ravel()
+    zipped = list(zip(features, count_vec))
+    x, y = (list(x) for x in zip(*sorted(zipped, key=lambda x: x[1], reverse=True)))
+    return { 'x': x, 'y': y}
+
+def extract_key_words(article):
+    tokens = nltk.word_tokenize(article)
+
 
 def filter_articles_on_comments_and_reactions(df):
     df = df.sort_values(by='ReactionsCount', ascending=False)
