@@ -1,25 +1,4 @@
-Les propriétés d'un article sur dev.to :
-
-title, reading_time, user, user_id, public_reactions_count, comments_count
-
-class_name
-cloudinary_video_url
-comments_count
-id
-path
-public_reactions_count
-readable_publish_date
-reading_time
-title
-user_id
-public_reaction_categories
-video_duration_string
-published_at_int
-tag_list
-flare_tag
-user
-
-Il faut pouvoir extraire les thèmes des articles, tous les KEYWORDS.
+Introduction à NLP
 
 # Préparer le contenu de l'article
 
@@ -54,23 +33,26 @@ Pour travailler avec eux, il est nécessaire de transformer le contenu d'un arti
 
 L'approche la plus connue est `Bag-Of-Word`. Elle récupère les mots de toutes les phrases, et créé pour chaque phrase une vecteur, où chaque cellule représente l'occurence d'un mot.
 
-# Observation
-
-Article : 'https://dev.to/lovelacecoding/modern-c-development-record-types-101-55bj'
-
-Pour cette article, nous observons que le mot le plus utilisé est `record`.
-
 # Extraire les mots clefs
 
-Article : 'https://dev.to/lovelacecoding/modern-c-development-record-types-101-55bj'
+Il existe plusieurs méthodes pour extraire les mots clefs d'un article comme `KeyBert`, `YAK`, `RAKE` ou encore `TF-IDF`.
 
-Algorithme : KeyBert
-Résultat : ('immutability', 0.4226), ('immutable', 0.3791)
+**KeyBert** : Utilise la similarité `cosine`. Chercher des phrases dont la signification se rapproche de la signification globale du document.
+Pour plus d'informations, se référer à la documentation : https://github.com/MaartenGr/KeyBERT
 
-Algorithme : YAK
-Résultat : 'mode Exit fullscreen', 0.007454046417715711), ('Exit fullscreen mode', 0.007454046417715711)
+**Yake** : Approche non supervisée, pour extraire les mots clefs en utilisant les `Text Features`.
 
-Références :
+# Identifier cluster de documents
+
+L'approche proposée par le site https://dylancastillo.co/nlp-snippets-cluster-documents-using-word2vec/, pour classifier un ensemble d'articles :
+
+1. Nettoyer et extraire les tokens des articles.
+2.1 Générer et entrainer un modèle Word2Vec. Transforme des mots en vecteurs numériques, réseaux de neurones à deux couches entraînés pour reconstruire le contexte linguistique d'un mort.
+2.2 Charger un modèle Word2Vec déjà entraîné.
+3. Utiliser le modèle Word2Vec pour générer un ensemble de vecteur pour chaque mot.
+4. Pour créer un cluster de document, utiliser l'algorithme `Mini-Batches K`.
+
+Implémenter l'approche proposée par https://towardsdatascience.com/extract-trending-stories-in-news-29f0e7d3316a
 
 https://medium.com/ft-product-technology/predicting-ft-trending-topics-7eda85ece727
 
@@ -81,3 +63,7 @@ https://nlp.stanford.edu/IR-book/html/htmledition/stemming-and-lemmatization-1.h
 https://monkeylearn.com/keyword-extraction/, Keyword extraction
 
 https://github.com/abmami/Fine-tuning-CamemBERT-for-Keyword-Extraction, Fine-tuning CamemBERT for Keyword Extraction
+
+https://machinelearningmastery.com/develop-word-embeddings-python-gensim/?ref=dylancastillo.co, How to Develop Word Embeddings in Python with Gensim
+
+https://www.nltk.org/book/ch06.html

@@ -1,63 +1,64 @@
-import requests
+import article_extractor
+import extract_keywords
+import cluster
+import article_preparation
 import pandas as pd
-import multiprocessing
-import nltk
-import numpy as np
-from nltk.stem import WordNetLemmatizer
-from bs4 import BeautifulSoup
+import gensim.downloader as api
 
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.cluster import MiniBatchKMeans
+from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.decomposition import PCA
+from nltk import word_tokenize
+from gensim.models.word2vec import Word2Vec
 
-stopwords = nltk.corpus.stopwords.words('english')
-lemmatizer = WordNetLemmatizer()
+def extract_clusters():
+    # 1. extract articles.
+    df = article_extractor.extract_articles_from_dev_to('60')
+    tokenized_docs = df["Article"].map(lambda x: article_preparation.clean_text(x, word_tokenize))
+    print('articles are extracted')
+    # articles = df['Article'].values
+    # tokenized_docs = df["Article"].map(lambda x: article_preparation.get_corpus([x]))
+    # corpus_articles = list([article_preparation.get_corpus([article]) for article in articles])
 
-class LemmaCountVectorizer(CountVectorizer):
-    def build_analyzer(self):
-        analyzer = super(LemmaCountVectorizer, self).build_analyzer()
-        return lambda doc: (lemmatizer.lemmatize(w) for w in analyzer(doc))
+    # 2.1 Train the algorithm
+    # model = Word2Vec(tokenized_docs, vector_size=100, workers=1)
 
-def read_article(link):
-    article_result = requests.get(link['base_url'])
-    article_soup = BeautifulSoup(article_result.text, features='html.parser')
-    content = article_soup.find(id='article-body')
-    return { 'article_content': content.get_text(), 'id': link['id'] }
+    # 2.2 Load a trained model.
+    trained_model = api.load('glove-twitter-25')
+    print('model is loaded')
 
-def download_articles_from_dev_to():
-    base_url = 'https://dev.to'
-    result = requests.get(base_url + '/search/feed_content?per_page=1&page=0&sort_by=published_at&sort_direction=desc&tag_names%5B%5D=dotnet&search_fields=dotnet')
-    json = result.json()
-    df = pd.json_normalize(json, 'result')
-    df = df[['id', 'title', 'user_id', 'public_reactions_count', 'comments_count', 'published_at_int', 'reading_time', 'path']]
-    df.columns = ['Id', 'Title', 'UserId', 'ReactionsCount', 'CommentsCount', 'Published', 'ReadingTime', 'Path']
-    df.loc[:,'Article'] = [''] * len(df)
-    links = list(map(lambda p,i: { 'base_url' : base_url + p, 'id' : i }, df['Path'], df.index.values))
-    with multiprocessing.Pool() as pool:
-        results = pool.map(read_article, links)
-    for link in results:
-        df[link['id'], 'Article'] = link['article_content']
-    return df
+    # 3. vectorize the model.
+    vectorized_docs = article_preparation.vectorize(tokenized_docs, trained_model)
 
-def clean_article(article):
-    article_tokens = nltk.word_tokenize(article)
-    article_tokens_cleaned = [lemmatizer.lemmatize(word) for word in article_tokens if word.lower() not in stopwords]
+    # 4. cluster
+    clustering, cluster_labels = cluster.mbkmeans_clusters(X=vectorized_docs, k=5, mb=100)
+    df_clusters = pd.DataFrame({
+        "text": df["Article"],
+        "url": df["Path"],
+        "tokens": [" ".join(text) for text in tokenized_docs],
+        "cluster": cluster_labels
+    })
 
-# 'https://dev.to/lovelacecoding/modern-c-development-record-types-101-55bj'
-def bag_of_word(article):
-    vectoriser = LemmaCountVectorizer(stop_words='english')
-    transform = vectoriser.fit_transform(article)
-    features = vectoriser.get_feature_names_out()
-    count_vec = np.asarray(transform.sum(axis=0)).ravel()
-    zipped = list(zip(features, count_vec))
-    x, y = (list(x) for x in zip(*sorted(zipped, key=lambda x: x[1], reverse=True)))
-    return { 'x': x, 'y': y}
+    # Dislay representative tokens per cluster.
+    for i in range(5):
+        tokens_per_cluster = ""
+        most_representative = trained_model.most_similar(positive=[clustering.cluster_centers_[i]], topn=5)
+        for t in most_representative:
+            tokens_per_cluster += f"{t[0]} "
+        print(f"Cluster {i}: {tokens_per_cluster}")
 
-def extract_key_words(article):
-    tokens = nltk.word_tokenize(article)
+    print(df_clusters["url"])
+    print(df_clusters["cluster"])
 
-
-def filter_articles_on_comments_and_reactions(df):
-    df = df.sort_values(by='ReactionsCount', ascending=False)
+def extract_key_words():
+    url = 'https://dev.to/lovelacecoding/modern-c-development-record-types-101-55bj'
+    article = article_extractor.read_article_content(url)
+    # cosine similarity
+    bert_keywords = extract_keywords.extract_keywords_with_bert(article)
+    # features extraction
+    yake_keywords = extract_keywords.extract_keywords_with_yake(article)
+    print(bert_keywords)
+    print(yake_keywords)
 
 if __name__ == '__main__':
-    df = download_articles_from_dev_to()
-    print(df)
+    extract_clusters()
