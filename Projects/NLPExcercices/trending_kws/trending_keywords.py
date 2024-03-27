@@ -1,19 +1,22 @@
 import pandas as pd
 import numpy as np
 import json
+import hdbscan
+
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from keybert import KeyBERT
+from sentence_transformers import SentenceTransformer
 
-def aggregate_keywords(df, keywords, article, multiplier, column_name):
+def aggregate_keywords(df, keywords, article):
     vectorizer = CountVectorizer(ngram_range=(1,2))
-    x = vectorizer.fit_transform([article[column_name]])
+    x = vectorizer.fit_transform([article['Content']])
     freqs = zip(vectorizer.get_feature_names_out(), np.asarray(x.sum(axis=0)).ravel())
     freqs_lst = list(freqs)
     for component in keywords:
         keyword_name = component[0]
-        score = component[1] * multiplier
+        score = component[1]
         existing_keyword = df.loc[df['Keyword'] == keyword_name]
         kw_freq = 1
         freqs = list(filter(lambda x: x[0] == keyword_name, freqs_lst))
@@ -42,32 +45,44 @@ def aggregate_keywords(df, keywords, article, multiplier, column_name):
                 df.loc[df['Keyword'] == keyword_name, 'CommentsCount'] = int(existing_keyword['CommentsCount']) + article['CommentsCount']
             df.loc[df['Keyword'] == keyword_name, 'Ponderation'] = int(existing_keyword['Ponderation']) + score
 
-def extract_keywords(all_titles, all_articles, articles_df):
+def extract_aggregated_keywords(content, articles_df):
     df = pd.DataFrame(columns=['Keyword','ArticleIds', 'ArticleUrls', 'NbArticles', 'Nb', 'Ponderation', 'ReactionsCount', 'CommentsCount'])
     for i in range(articles_df.shape[0]):
         article = articles_df.iloc[i]
-        title_keywords = all_titles[i]
-        article_keywords = all_articles[i]
-        aggregate_keywords(df, title_keywords, article, 1.4, 'Title')
-        aggregate_keywords(df, article_keywords, article, 1, 'Article')
+        content_keywords = content[i]
+        aggregate_keywords(df, content_keywords, article)
     return df
 
 def extract_trending_keywords_keyBERT():
     file = "articles.csv"
     df = pd.read_csv(file)
+    df["Content"] = df["Title"] + " " + df["Article"]
     kw_model = KeyBERT()
-    title_keywords = df["Title"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,2), use_mmr=False, top_n=1)
-    article_keywords = df["Article"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,2), use_mmr=False, top_n=1)
-    trending_keywords = extract_keywords(title_keywords, article_keywords, df)
+    content_keywords = df["Content"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,2), use_mmr=False, top_n=5)
+    trending_keywords = extract_aggregated_keywords(content_keywords, df)
     trending_keywords.to_csv("extracted_trending_keywords.csv", sep=',', encoding='utf-8')
 
-def analyse_result():
+def get_trending_keywords():
     file = "extracted_trending_keywords.csv"
     df = pd.read_csv(file)
     df.loc[:, 'ComputedPonderation'] = [''] * len(df)
-    # df["PonderationAmongAllArticles"] = df.apply(lambda row: row["Ponderation"] * row["NbArticles"], axis=1)
-    # df["PonderationAmongAllReactions"] = df.apply(lambda row: row["Ponderation"] * row["ReactionsCount"], axis=1)
     weight_reactions = 0.4
     df["ComputedPonderation"] = df.apply(lambda row: (row["Ponderation"] * row["NbArticles"]) + (row["ReactionsCount"] * weight_reactions), axis=1)
     sorted_df = df.sort_values(by=['ComputedPonderation'], ascending=False)[:30]
+    return sorted_df
+
+def analyse_result():
+    sorted_df = get_trending_keywords()
     print(sorted_df[['Keyword', 'NbArticles', 'ReactionsCount', 'ComputedPonderation']])
+
+def cluster_similar_keywords():
+    sorted_df = get_trending_keywords()
+
+    embedder = SentenceTransformer('all-mpnet-base-v2')
+    corpus_embeddings = embedder.encode(sorted_df["Keyword"].values)
+
+    clusterer = hdbscan.HDBSCAN(min_cluster_size=3)
+    labels = clusterer.fit_predict(corpus_embeddings)
+
+    sorted_df["label"] = [str(label) for label in labels]
+    print(sorted_df)

@@ -7,11 +7,12 @@ Afin de m'aider dans cette tâche, je vais développer une application console e
 L'objectif de cet article est de comprendre le fonctionnement du domaine Natural Language Processing (NLP), au travers un cas d'usage concret.
 
 Le processus d'extration des mots clefs se décompose de cette façon :
-1. Récupérer les articles du site [dev.to].
-2. Extraire les mots clefs.
-3. Récupérer les mots clefs les plus populaires.
+1. Récupérations des articles du site [dev.to].
+2. Extractions des mots clefs.
+3. Aggrégation des mots clefs.
+4. Exploitation des données.
 
-## Récupérer les articles
+## Récupération des articles
 
 Après avoir analysé le traffic HTTP du site [dev.to], j'ai pu identifier une API REST. Elle expose une opération qui retourne les 60 derniers articles qui ont le hashtag #dotnet.
 
@@ -87,7 +88,7 @@ Vous trouverez le code complet de l'extraction des articles [ici]().
 
 Maintenant que les articles sont prêts à être exploités, les mots clefs peuvent être extraits.
 
-## Extraire les mots clefs
+## Extraction des mots clefs
 
 Il existe plusieurs algorithmes pour extraire les mots clefs :
 
@@ -107,8 +108,8 @@ from keybert import KeyBERT
 
 file = "articles.csv"
 df = pd.read_csv(file)
-title_keywords = df["Title"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,3), top_n=2)
-article_keywords = df["Article"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,3), top_n=2)
+df["Content"] = df["Title"] + " " + df["Article"]
+content_keywords = df["Content"].apply(kw_model.extract_keywords, keyphrase_ngram_range=(1,2), use_mmr=False, top_n=5)
 ```
 
 Les paramètres suivants sont passées à la fonction `extract_keywords`
@@ -118,28 +119,56 @@ Les paramètres suivants sont passées à la fonction `extract_keywords`
 | keyphrase_ngram_range | (1,2)  | Extraire les mots clefs avec un ou deux tokens   |
 | top_n                 | 2      | Extraire les deux mots clefs les plus pertinents |
 
-Maintenant que les mots clefs des articles sont extraits, nous pouvons extraire les mots clefs les plus tendances.
+Maintenant que les mots clefs des articles sont extraits, nous pouvons extraire les mots clefs les plus pertinents.
 
-## Récupérer les mots clefs les plus populaires.
+## Aggrégation des mots clefs
 
 Nous assumons que la popularité d'un mot clef est dépendante de celle de l'article où il se trouve.
-Dans la première partie, nous avons remarqué que les propriétés ``, `` retournées par l'opération de l'API peuvent être exploitées, pour calculer la populartié d'un mot clef.
 
-Voici la formule utilisée pour calculer la popularité d'un mot clef :
+TODO : EXPLIQUER L OBJECTIF DE L AGGREGATION. GROUPEMENT D ARTICLE AGGREGER.
+
+Le script python, possède deux fonctions principales. 
+La première `extract_aggregated_keywords` appelle une fonction `aggregate_keywords`, pour aggréger l'ensemble des mots clefs de tous les articles. Si un mot clef est retrouvé dans plus d'un articles, alors on calcule la somme des réactions et des commentaires et on met à jour les propriétés `NbArticles`, `ReactionsCount` et `CommentsCount`.
+
+Vous trouverez le code source de ces deux fonctions [ici](LINK)
+
+Le résultat de l'aggrégation est sauvegardé dans un fichier, et prêt à être exploité.
+
+## Exploitation des données
+
+Dans la première partie, nous avons remarqué que les propriétés `public_reactions_count`, `comments_count` retournées par l'opération de l'API peuvent être exploitées, pour calculer la popularité d'un mot clef.
+
+Voici la formule naïve utilisée, pour calculer la popularité d'un mot clef :
+
+$$
+ws^{i}=\sum_{z=0}^{n}(1*was^{i}) + war^{i}
+$$
+
+
+* $ws^{i}$ : Pondération du ième mot clef.
+* $1*was^{i}$ : Pertinence du mot clef dans l'article, correspond au score obtenue par l'algorithme KeyBert. La valeur est comprise entre 0 et 1.
+* $war^{i}$ : Si le mot clef appartient au z ième article, alors la valeur est égale au nombre total de réactions sur l'article.
+
+Le code python ci-dessous, affiche les 30 mots clefs les plus populaires, triés par leur pondération :
 
 ```
-P(i) = SUM(A) * SUM(W) + SUM(R) * W
+file = "extracted_trending_keywords.csv"
+df = pd.read_csv(file)
+df.loc[:, 'ComputedPonderation'] = [''] * len(df)
+weight_reactions = 0.4
+df["ComputedPonderation"] = df.apply(lambda row: (row["Ponderation"] * row["NbArticles"]) + (row["ReactionsCount"] * weight_reactions)axis=1)
+sorted_df = df.sort_values(by=['ComputedPonderation'], ascending=False)[:30]
 ```
 
-* SUM(A) : Nombre total d'articles qui possède le mot clef.
-* SUM(R) : Nombre total de réactions.
-* W : Pondération sur l'importance de la réaction dans le calcul, par défault cette valeur est égale à 0.4.
+Il se peut que certains mots clefs aient une forte corrélation, c'est pourquoi il est aussi important de les classer par topic :
 
-IL FAUT MERGE TITLE ET CONTENU POUR EXTRAIRE LES MOTS CLEFS
+VOIR COSINE
+
+# Conclusion
+
+TODO
 
 # Ressources
-
-Implémenter l'approche proposée par https://towardsdatascience.com/extract-trending-stories-in-news-29f0e7d3316a
 
 https://medium.com/ft-product-technology/predicting-ft-trending-topics-7eda85ece727
 
