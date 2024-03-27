@@ -14,7 +14,7 @@ def extract_tokens_from_article(article):
         r"[^a-zA-Z\s+]+", " ", article_cleaned
     ).lower()
     article_cleaned = re.sub(
-        "programming", "", article_cleaned
+        "(programming|net|dotnet)", "", article_cleaned
     )
     tokens = word_tokenize(article_cleaned)
     tokens = [

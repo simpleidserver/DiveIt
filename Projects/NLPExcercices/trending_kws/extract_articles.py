@@ -4,12 +4,8 @@ import multiprocessing
 from bs4 import BeautifulSoup
 import re
 
-def read_article(url):
-    article_content = read_article_content(url['base_url'])
-    return { 'article_content': article_content, 'id': url['id'] }
-
-def read_article_content(url):
-    article_result = requests.get(url)
+def read_article(url):    
+    article_result = requests.get(url['base_url'])
     article_soup = BeautifulSoup(article_result.text, features='html.parser')
     [x.extract() for x in article_soup.findAll(True, {"class": ["highlight"]})]
     [x.extract() for x in article_soup.findAll("script")]
@@ -22,7 +18,8 @@ def read_article_content(url):
             u"\U0001F680-\U0001F6FF"  # transport & map symbols
             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
     "]+", flags=re.UNICODE)
-    return emoji_pattern.sub(r'', text)
+    article_content = emoji_pattern.sub(r'', text)
+    return { 'article_content': article_content, 'id': url['id'] }
 
 def extract_articles_from_dev_to(nb_articles=60):
     base_url = 'https://dev.to'
