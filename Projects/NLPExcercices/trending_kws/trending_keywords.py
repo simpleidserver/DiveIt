@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 import hdbscan
+import umap
 
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -34,7 +35,7 @@ def extract_trending_keywords():
 
     # 5. Get trending keywords
     sorted_df = df.sort_values(by=['ReactionsCount'], ascending=False)
-    print(sorted[["ReactionsCount", "Label", "Keywords"]][:30])
+    print(sorted_df[["ReactionsCount", "Label", "Keywords"]][:30])
 
     # 6. Get topics with the most reactions
     grp = df.groupby(by=["Label"])
