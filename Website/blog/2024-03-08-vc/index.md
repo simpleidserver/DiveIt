@@ -1,4 +1,4 @@
-# Part 1 - Generate verifiable credentials with pre-authorized code
+# Part 1 - Generate verifiable credentials with pre-authorized code grant-type
 
 Depuis quelques temps, la commission européenne travaille sur un projet de portefeuille électronique qui sera disponible à tous les citoyens européens, ce projet se nomme [ebsi](https://ec.europa.eu/digital-building-blocks/sites/display/EBSI/EBSI+Verifiable+Credentials).
 L'idée, est d'offrir aux institutions publiques la possibilité de distribuer des certificats aux citoyens qui seront stockés uniquement sur leurs appareils mobiles comme : Certificat COVID, la carte d'identité, le permis de conduire, les prescriptions médicales etc...
@@ -29,7 +29,7 @@ Même si il n'est pas explicitement expliqué dans le [RFC](https://openid.net/s
 * Eviter d'avoir une application monolithe, qui agirait comme un serveur d'identité, mais aussi une API REST, capable de produire des `Verifiable Credentials`.
 * Le credential issuer derait être capable de supporter un ou plusieurs serveurs d'authorisation.
 
-[!](./images/architecture.png)
+![architecture](./images/architecture.png)
 
 Le flux `pre authorized code` est composé des étapes suivantes : 
 1. **Scan QR code** : L'étudiant navigue sur le site de son université. Il clique le bouton pour partager son diplôme. Cette action génère un QR code, qui peut être scanné par le portefeuille électronique (par exemple : une application mobile).

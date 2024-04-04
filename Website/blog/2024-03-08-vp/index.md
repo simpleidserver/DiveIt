@@ -1,10 +1,10 @@
-# Part 2 - Verifiable credentials - Cross device flow
+# Part 2 - Use the verifiable credentials to register a local account
 
-Cet article est la suite de [Generate verifiable credentials from scratch].
+Cet article est la suite de [Generate verifiable credentials with pre-authorized code grant-type].
 Nous y avions expliqué comment développer une application REST.API capable de produire des `verifiable credentials`. 
 Nous supposons que vous avez à votre disposition une API REST capable de produire des `verifiable credentials`,  ainsi que d'un portefeuille électronique avec au moins un `verifiable credential`.
 
-Nous allons expliquer, comment utiliser le portefeuille électronique pour s'authentifier auprès d'un site développé en ASP.NET CORE.
+Nous allons expliquer, comment utiliser le portefeuille électronique pour s'enregistrer auprès d'un site développé en ASP.NET CORE.
 
 Le groupe de travail [OpenID for verifiable Credentials](https://openid.net/sg/openid4vc/), a déjà répondu à cette problématique, et propose une nouvelle spécification [OpenID for verifiable Presentations](OID4VP), que nous allons parcourir.
 
@@ -17,7 +17,7 @@ La sécurité d'une `Presentation` est très importante, car le site / `verifier
 Par conséquent, avant d'envoyer la présentation, le portefeuille électronique doit prouver qu'il est en possession de la clef privée.
 Voici dans les grandes lignes, l'algorithme pour construire une `verifiable presentation`.
 
-[DIAGRAM]
+![architecture](./images/architecture.png)
 
 1. Le portefeuille construit une présentation avec un ou plusieurs `verifiable credentials`, qui ont été obtenus de différents `issuers` et qui peuvent avoir des formats différents.
 2. Utilise la clef privée de son `distributed identity document` pour signer la `presentation`.
@@ -38,7 +38,7 @@ Etant donné que le `verifier` et le `portefeuille électronique` ne sont pas h�
 
 Le processus d'authentification est simple et n'est pas d'une grande complexité. Il est constitué des étapes suivantes :
 
-[WORKFLOW]
+![workflow](./images/workflow.png)
 
 1. L'utilisateur choisit avec quel credential il va s'authentifier, par exemple avec son permis de conduire.
 
@@ -65,7 +65,15 @@ https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6
 
 ## Implémentation
 
-Nous allons ici mettre en place un serveur d'identité, OPENID, capable de ... ?
+Nous allons ici utiliser un serveur d'identité, capable de créer un compte local.
+
+INSTALLER SID ID SERVER
+
+REGISTER LOCAL ACCOUNT
+
+SCAN QR CODE
+
+ENROLLED
 
 # Resources
 
