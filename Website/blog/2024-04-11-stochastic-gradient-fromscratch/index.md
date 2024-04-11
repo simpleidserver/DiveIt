@@ -105,7 +105,6 @@ $$
 
 Here is the updated gradient algorithm to minimize the loss function of a simple linear function.
 
-```
 1. Initialize the vector `x` with values.
 2. Initialize the vector `y` with values.
 3. Initialize the variable `w` for `weight`.
@@ -118,7 +117,6 @@ Here is the updated gradient algorithm to minimize the loss function of a simple
    8.1 $w = w - \eta * (\frac{1}{N} \sum_{i}^{n} -2 * xi * (yi - (itp + w * xi)))$
    
    8.2 $itp = itp - \eta * (\frac{1}{N} \sum_{i}^{n} -2 * (yi - (itp + w * xi)))$
-```
 
 A simple-shaped function may not be sufficient for you, as you have more than 2 parameters to calculate. 
 
@@ -136,7 +134,6 @@ Here, the values of the variables `xi` can be represented in the form of a matri
 
 The algorithm is very similar to that applied for a simple linear function but contains a few differences.
 
-```
 1. Initialize the vector `x` with values.
 2. Initialize the vector `y` with values.
 3. Initialize the variable `w` for `weight`.
@@ -149,7 +146,6 @@ The algorithm is very similar to that applied for a simple linear function but c
    8.1 $w = w - \eta * ( \frac{1}{N} * \sum_{i}^{n} -2 * wT * xi * (yi - (itp + w * xi)))$
 
    8.2 $itp = itp - \eta * ( \frac{1}{N} * \sum_{i}^{n} 2 * itp * (yi - (itp + w*xi)))$
-```
 
 At step 8.1, the matrix w must be transposed. For more information on this operation, refer to this site [https://en.wikipedia.org/wiki/Transpose](https://en.wikipedia.org/wiki/Transpose).
 
@@ -161,7 +157,6 @@ To address this issue, the Stochastic Gradient Descent algorithm has been introd
 The idea of the algorithm is to take a random dataset from the variables `x` and `y` and apply the Gradient Descent algorithm to it. 
 This algorithm diverges slightly from the previous one:
 
-```
 1. Initialize the vector `x` with values.
 2. Initialize the vector `y` with values.
 3. Initialize the variable `w` for `weight`.
@@ -176,7 +171,6 @@ This algorithm diverges slightly from the previous one:
    8.1 $w = w - \eta * ( \frac{1}{N} * \sum_{i}^{n} -2 * wT * txi * (tyi - (itp + w * txi)))$
 
    8.2 $itp = itp - \eta * ( \frac{1}{N} * \sum_{i}^{n} 2 * itp * (tyi - (itp + w*txi)))$
-```
 
 Now that you have an overview of the Gradient Descent algorithm, we will develop a naive implementation in C# of the Stochastic Gradient Descent algorithm.
 
@@ -292,14 +286,12 @@ You will find the source code at this link: [https://github.com/simpleidserver/D
 
 ## Resources
 
-https://en.wikipedia.org/wiki/Stochastic_gradient_descent, Stochastic gradient descent
-
-https://sebastianraschka.com/faq/docs/gradient-optimization.html, What are gradient descent and stochastic gradient descent?
-
-https://towardsdatascience.com/stochastic-gradient-descent-explained-in-real-life-predicting-your-pizzas-cooking-time-b7639d5e6a32, Stochastic Gradient Descent explained in real life
-
-https://optimization.cbe.cornell.edu/index.php?title=Stochastic_gradient_descent, Stochastic gradient descent
-
-https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html, Matrix Multiplication Background User's Guide
+| Link |
+| ---- |
+| https://en.wikipedia.org/wiki/Stochastic_gradient_descent, Stochastic gradient descent |
+| https://sebastianraschka.com/faq/docs/gradient-optimization.html, What are gradient descent and stochastic gradient descent? |
+| https://towardsdatascience.com/stochastic-gradient-descent-explained-in-real-life-predicting-your-pizzas-cooking-time-b7639d5e6a32, Stochastic Gradient Descent explained in real life |
+| https://optimization.cbe.cornell.edu/index.php?title=Stochastic_gradient_descent, Stochastic gradient descent |
+| https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html, Matrix Multiplication Background User's Guide |
 
 <GiscusComponent />
