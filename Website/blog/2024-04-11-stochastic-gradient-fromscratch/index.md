@@ -282,7 +282,7 @@ In future articles, we will explain how to improve the performance of the algori
 
 ## Source code
 
-You will find the source code at this link: [https://github.com/simpleidserver/DiveIt/Projects/SGD](https://github.com/simpleidserver/DiveIt/Projects/SGD).
+You will find the source code at this link: [https://github.com/simpleidserver/DiveIt/tree/main/Projects/SGD](https://github.com/simpleidserver/DiveIt/tree/main/Projects/SGD).
 
 ## Resources
 
