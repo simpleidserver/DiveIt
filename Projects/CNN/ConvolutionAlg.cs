@@ -1,0 +1,40 @@
+﻿namespace CNN;
+
+public class ConvolutionAlg
+{
+    public static int[,] Transform(int[,] picture, int[,] filter, int padding = 1, int strideW = 1, int strideH = 1)
+    {
+        var resizedPicture = ResizePicture(picture, padding);
+        var result = new int[
+            (picture.GetLength(0) - filter.GetLength(0) + padding * 2 + strideH) / strideH, 
+            (picture.GetLength(1) - filter.GetLength(1) + padding * 2 + strideW) / strideW
+        ];
+        for(var y = 0; y < result.GetLength(0); y++)
+        {
+            for(var x = 0; x < result.GetLength(1); x++)
+            {
+                var portion = MatrixHelper.GetPortion(
+                    resizedPicture, 
+                    filter.GetLength(1), 
+                    filter.GetLength(0), 
+                    x * strideW,
+                    y * strideH);
+                result[y, x] = MatrixHelper.Multiply(portion, filter);
+            }
+        }
+
+        return result;
+    }
+
+    public static int[,] ResizePicture(int[,] picture, int padding)
+    {
+        var newHeight = picture.GetLength(0) + padding * 2;
+        var newWidth = picture.GetLength(1) + padding * 2;
+        var result = new int[newHeight, newWidth];
+        for(var y = 0; y < picture.GetLength(0); y++)
+            for(var x = 0; x < picture.GetLength(1); x++)
+                result[y + padding, x + padding] = picture[y, x];
+
+        return result;
+    }
+}
