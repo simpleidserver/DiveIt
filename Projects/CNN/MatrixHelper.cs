@@ -4,11 +4,11 @@ namespace CNN
 {
     public class MatrixHelper
     {
-        public static int Multiply(int[,] matrixA, int[,] matrixB)
+        public static decimal Multiply(decimal[,] matrixA, decimal[,] matrixB)
         {
             var height = matrixA.GetLength(0);
             var width = matrixA.GetLength(1);
-            int result = 0;
+            decimal result = 0;
             for (var y = 0; y < height; y++)
             {
                 for (var x = 0; x < width; x++)
@@ -20,11 +20,11 @@ namespace CNN
             return result;
         }
 
-        public static int[,] Sum(int[,] matrixA, int[,] matrixB)
+        public static decimal[,] Sum(decimal[,] matrixA, decimal[,] matrixB)
         {
             var height = matrixA.GetLength(0);
             var width = matrixA.GetLength(1);
-            var result = new int[height, width];
+            var result = new decimal[height, width];
             for (var y = 0; y < height; y++)
             {
                 for (var x = 0; x < width; x++)
@@ -36,9 +36,9 @@ namespace CNN
             return result;
         }
 
-        public static int[,] GetPortion(int[,] matrix, int width, int height, int startX, int startY)
+        public static decimal[,] GetPortion(decimal[,] matrix, int width, int height, int startX, int startY)
         {
-            var result = new int[height, width];
+            var result = new decimal[height, width];
             for (var y = 0; y < result.GetLength(0); y++)
                 for (var x = 0; x < result.GetLength(1); x++)
                 {
@@ -48,9 +48,9 @@ namespace CNN
             return result;
         }
 
-        public static int Max(int[,] matrix)
+        public static decimal Max(decimal[,] matrix)
         {
-            int result = default(int);
+            decimal result = default(decimal);
             for (var y = 0; y < matrix.GetLength(0); y++)
                 for (var x = 0; x < matrix.GetLength(1); x++)
                 {
@@ -62,9 +62,9 @@ namespace CNN
             return result;
         }
 
-        public static int[,] Reshape(int[] data, int width, int height)
+        public static decimal[,] Reshape(decimal[] data, int width, int height)
         {
-            var result = new int[height, width];
+            var result = new decimal[height, width];
             for(var y = 0; y < height; y++)
             {
                 for(var x = 0; x < width; x++)

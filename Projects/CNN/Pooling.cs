@@ -2,9 +2,9 @@
 
 public class Pooling
 {
-    public static int[,] MaxPool(int[,] inputMatrix, int poolWidth, int poolHeight)
+    public static decimal[,] MaxPool(decimal[,] inputMatrix, int poolWidth, int poolHeight)
     {
-        var result = new int[
+        var result = new decimal[
             (int)Math.Round((decimal)(inputMatrix.GetLength(0) / poolHeight)),
             (int)Math.Round((decimal)(inputMatrix.GetLength(1) / poolWidth))
         ];

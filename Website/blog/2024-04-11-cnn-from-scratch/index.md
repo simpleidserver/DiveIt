@@ -97,7 +97,6 @@ Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia
 
 L'objectif de l'algorithme est de réduire la taille de la matrice d'entrée, en appliquant une des opérations `max`, `min` ou `average` sur chaque fenêtre.
 
-
 L'algorithme est constitué des étapes suivantes :
 1. Créer une matrice de sortie de taille ((iw / pw), (ih / ph)).
 2. Décomposer la matrice en entrée en plusieurs fenêtres de taille (pw, ph).
@@ -106,7 +105,13 @@ L'algorithme est constitué des étapes suivantes :
 
 3. Pour chaque fenêtre appliquer une des opérations : `max`, `min`, `average`.
 
+## Softmax
 
+Nous utilisons comme dernière couche, une couche dense d'activation de type `softmax`.
+
+La fonction `softmax` transforme des données arbitraires, en probabilités. Elle est utilisée pour calculer la probabilité d'appartenance à une catégorie.
+
+[AJOUTER LE CALCUL].
 
 ## Resources
 
@@ -120,3 +125,6 @@ L'algorithme est constitué des étapes suivantes :
 | https://web.pdx.edu/~jduh/courses/Archive/geog481w07/Students/Ludwig_ImageConvolution.pdf |
 | https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#fig-correlation, Convolutions for image |
 | https://python.plainenglish.io/building-a-handwritten-alphabets-classifier-using-convolutional-neural-networks-2f84a47eb3ec, Building a Handwritten Alphabets Classifier using Convolutional Neural Networks |
+| https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53, A Comprehensive Guide to Convolutional Neural Networks — the ELI5 way |
+| https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65, Neural Network from scratch in Python |
+| https://victorzhou.com/blog/softmax/, Softmax |

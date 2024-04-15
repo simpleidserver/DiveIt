@@ -8,9 +8,9 @@ public class Picture
     public static ImageExtractionResult Extract(string path)
     {
         var img = new Bitmap(path);
-        var redMatrix = new int[img.Height,img.Width];
-        var greenMatrix = new int[img.Height, img.Width];
-        var blueMatrix = new int[img.Height, img.Width];
+        var redMatrix = new decimal[img.Height,img.Width];
+        var greenMatrix = new decimal[img.Height, img.Width];
+        var blueMatrix = new decimal[img.Height, img.Width];
         for(var y = 0; y < img.Height; y++)
         {
             for(var x = 0; x < img.Width; x++)
@@ -30,16 +30,16 @@ public class Picture
         };
     }
 
-    public static int[,] ExtractGrayScale(string path)
+    public static decimal[,] ExtractGrayScale(string path)
     {
         var img = new Bitmap(path);
-        var result = new int[img.Height, img.Width];
+        var result = new decimal[img.Height, img.Width];
         for (var y = 0; y < img.Height; y++)
         {
             for (var x = 0; x < img.Width; x++)
             {
                 var pixel = img.GetPixel(x, y);
-                int grayScale = (int)((pixel.R * .3) + 
+                decimal grayScale = (decimal)((pixel.R * .3) + 
                     (pixel.G * .59) + 
                     (pixel.B * .11));
                 result[y, x] = grayScale;
@@ -51,8 +51,8 @@ public class Picture
 
     public static void Save(string path, ImageExtractionResult result)
     {
-        var matrix = new Emgu.CV.Matrix<int>(result.BlueMatrix);
-        CvInvoke.Imwrite(path, matrix);
+        // var matrix = new Emgu.CV.Matrix<int>(result.BlueMatrix);
+        // CvInvoke.Imwrite(path, matrix);
         /*
         var height = result.BlueMatrix.GetLength(0);
         var width = result.BlueMatrix.GetLength(1);
@@ -76,8 +76,8 @@ public class Picture
 
     public record ImageExtractionResult
     {
-        public int[,] GreenMatrix { get; set; }
-        public int[,] RedMatrix { get; set; }
-        public int[,] BlueMatrix { get; set; }
+        public decimal[,] GreenMatrix { get; set; }
+        public decimal[,] RedMatrix { get; set; }
+        public decimal[,] BlueMatrix { get; set; }
     }
 }

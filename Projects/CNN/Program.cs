@@ -6,16 +6,26 @@
 using CNN;
 using static CNN.Picture;
 
-void ReadData()
+void TrainHandWritter()
 {
+    var rnd = new Random();
+    var tt = rnd.NextDecimal(-1, 1);
+
+    // Read data.
     var content = File.ReadAllLines("c:\\Projects\\DiveIt\\Projects\\CNN\\A_Z Handwritten Data.csv")
-        .Select(s => s.Split(',').Select(n => int.Parse(n)));
+        .Select(s => s.Split(',').Select(n => decimal.Parse(n)));
     var trainSize = 0.2;
     var numberToTrain = (int)(content.Count() * trainSize);
     var trainData = content.Take(numberToTrain);
-    var trainX = trainData.Select(s => MatrixHelper.Reshape(s.Skip(1).ToArray(), 28, 28));
-    var trainY = trainData.Select(s => s.First()).ToList();
+    var trainX = trainData.Select(s => MatrixHelper.Reshape(s.Skip(1).ToArray(), 28, 28)).ToArray();
+    var trainY = trainData.Select(s => s.First()).ToArray();
 
+    // train the model.
+    var network = new Network();
+    network.Layers.Add(new ConvLayer(8, 3, 1));
+    network.Layers.Add(new PoolingLayer());
+    network.Layers.Add(new SoftmaxLayer());
+    network.Fit(trainX, trainY);
 }
 
 void Convulation()
@@ -28,13 +38,13 @@ void Convulation()
     //     { -1, 8, -1 },
     //     { -1, -1, -1 }
     // };
-    var filter = new int[,]
+    var filter = new decimal[,]
     {
         { 0, 1 },
         { 2, 3 }
     };
     // var grayScale = Picture.ExtractGrayScale(Path.Combine(Directory.GetCurrentDirectory(), "picture.png"));
-    var grayScale = new int[,]
+    var grayScale = new decimal[,]
     {
         { 0, 1, 2 },
         { 3, 4, 5 },
@@ -51,7 +61,7 @@ void Convulation()
 
 void MaxPool()
 {
-    var matrix = new int[,]
+    var matrix = new decimal[,]
     {
         { 0, 50, 0, 29 },
         { 0, 80, 31, 2 },
@@ -62,9 +72,11 @@ void MaxPool()
     string ss = "";
 }
 
+TrainHandWritter();
+
 // ExtractGrayScale();
 // Convulation();
 // MaxPool();
-ReadData();
+// ReadData();
 
 Console.WriteLine("Hello, World!");
