@@ -4,7 +4,8 @@
 // implémenter convolution.
 
 using CNN;
-using static CNN.Picture;
+using CNN.Extensions;
+using CNN.Layers;
 
 void TrainHandWritter()
 {
@@ -22,58 +23,48 @@ void TrainHandWritter()
 
     // train the model.
     var network = new Network();
-    network.Layers.Add(new ConvLayer(8, 3, 1));
-    network.Layers.Add(new PoolingLayer());
-    network.Layers.Add(new SoftmaxLayer());
+    network.Layers.Add(new ConvolutionLayer(8, 3));
+    network.Layers.Add(new MaxPoolingLayer(2, 2));
+    network.Layers.Add(new SoftmaxLayer(10));
     network.Fit(trainX, trainY);
+
 }
 
-void Convulation()
+void TestMaxPooling()
 {
-    // https://en.wikipedia.org/wiki/Kernel_(image_processing)
-    // edge detection.
-    // var filter = new int[,]
-    // {
-    //     { -1, -1, -1 },
-    //     { -1, 8, -1 },
-    //     { -1, -1, -1 }
-    // };
-    var filter = new decimal[,]
+    var data = new decimal[][,]
     {
-        { 0, 1 },
-        { 2, 3 }
+        new decimal[,]
+        {
+            { 2, 2, 7, 3 },
+            { 9, 4, 6, 1 },
+            { 8, 5, 2, 4 },
+            { 3, 1, 2, 6 }
+        }
     };
-    // var grayScale = Picture.ExtractGrayScale(Path.Combine(Directory.GetCurrentDirectory(), "picture.png"));
-    var grayScale = new decimal[,]
-    {
-        { 0, 1, 2 },
-        { 3, 4, 5 },
-        { 6, 7, 8 }
-    };
-    var newGrayScale = ConvolutionAlg.Transform(grayScale, filter, filter.GetLength(0) - 1);
-    Picture.Save(Path.Combine(Directory.GetCurrentDirectory(), "other-picture-transformed.png"), new ImageExtractionResult
-    {
-        BlueMatrix = newGrayScale,
-        RedMatrix = newGrayScale,
-        GreenMatrix = newGrayScale
-    });
+    var network = new Network();
+    network.Layers.Add(new MaxPoolingLayer(2, 2));
+    network.Predict(data);
 }
 
-void MaxPool()
+void TestSoftmaxLayer()
 {
-    var matrix = new decimal[,]
+    var data = new decimal[][,]
     {
-        { 0, 50, 0, 29 },
-        { 0, 80, 31, 2 },
-        { 33, 90, 0, 75 },
-        { 0, 9, 0, 95 }
+        new decimal[,]
+        {
+            { 2, 2, 7, 3 },
+            { 9, 4, 6, 1 }
+        }
     };
-    var r = Pooling.MaxPool(matrix, 2, 2);
-    string ss = "";
+    var network = new Network();
+    network.Layers.Add(new SoftmaxLayer(2));
+    network.Predict(data);
 }
 
 TrainHandWritter();
-
+// TestMaxPooling();
+// TestSoftmaxLayer();
 // ExtractGrayScale();
 // Convulation();
 // MaxPool();

@@ -95,7 +95,11 @@ Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia
 
 ## Pooling layer
 
-L'objectif de l'algorithme est de réduire la taille de la matrice d'entrée, en appliquant une des opérations `max`, `min` ou `average` sur chaque fenêtre.
+L'algorithme réduit la taille de la matrice d'entrée, en appliquant une des opérations `max`, `min` ou `average` sur chaque fenêtre. 
+L'objectif est double :
+
+1. Réduire la dimension.
+2. Résumer les données présentes dans une région, de cette façon, les futures opérations sont exécutées sur un résumé au lieux de données précises.
 
 L'algorithme est constitué des étapes suivantes :
 1. Créer une matrice de sortie de taille ((iw / pw), (ih / ph)).
