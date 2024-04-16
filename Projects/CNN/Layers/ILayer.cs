@@ -2,6 +2,6 @@
 {
     public interface ILayer
     {
-        decimal[][,] Forward(decimal[][,] matrix);
+        double[][,] Forward(double[][,] matrix);
     }
 }

@@ -16,6 +16,8 @@ Les paramètres pour chaque neurone :
 * **Bias terms** : Chaque neurone possède un `bias term`. 
 * **Activation function** : Chaque neurone applique une fonction d'activation sur le `weighted sum` et le bias. Quelques exemples de fonction d'activation : RELU.
 
+### Forward propagation
+
 Algorithme de forward :
 1. Les données en entrée sont assignées aux neurones.
 
@@ -24,6 +26,12 @@ Algorithme de forward :
 2.1. Weighted Sum (Z): Z = Σ(Wij * Xj) + bi, where Wij is the weight, Xj is the output of the j-th neuron in the previous layer, and bi is the bias of the current neuron.
 
 2.2. Activation (A): A = σ(Z), where σ is the activation function.
+
+TODO
+
+### Backward propagation
+
+TODO
 
 ## Convolutional Layer
 
@@ -92,6 +100,13 @@ Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia
 | Identity | 
 | Ridge or edge detection |
 
+### Forward
+
+TODO
+
+### Backward
+
+TODO
 
 ## Pooling layer
 
@@ -101,9 +116,23 @@ L'objectif est double :
 1. Réduire la dimension.
 2. Résumer les données présentes dans une région, de cette façon, les futures opérations sont exécutées sur un résumé au lieux de données précises.
 
+### Forward propagation
+
 L'algorithme est constitué des étapes suivantes :
+
 1. Créer une matrice de sortie de taille ((iw / pw), (ih / ph)).
+
 2. Décomposer la matrice en entrée en plusieurs fenêtres de taille (pw, ph).
+
+### Backward propagation
+
+Etant donné que le `Pooling layer` ne possède aucun `weights`, il faut trouver le gradient de l'erreur pour chaque élément de la matrice d'entrée : $\frac{\delta E}{\delta x}$.
+
+1. Créer une matrice de sortie, de la même taille que celle qui a été reçue en dernier.
+
+2. Décomposer la matrice en plusieurs fenêtres de taille (pw, ph).
+
+3. Pour chaque fenêtre, si l'élément n'est pas la maximum alors mettre 0, sinon prendre le gradient de l'erreur.
 
 [IMAGE]
 
@@ -116,6 +145,14 @@ Nous utilisons comme dernière couche, une couche dense d'activation de type `so
 La fonction `softmax` transforme des données arbitraires, en probabilités. Elle est utilisée pour calculer la probabilité d'appartenance à une catégorie.
 
 [AJOUTER LE CALCUL].
+
+### Forward propagation
+
+TODO
+
+### Backward propagation
+
+
 
 ## Resources
 

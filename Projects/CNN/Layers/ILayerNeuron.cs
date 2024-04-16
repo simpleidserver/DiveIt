@@ -2,6 +2,6 @@
 {
     public interface ILayerNeuron
     {
-        decimal[,] Forward(decimal[][,] matrixLst);
+        double[,] Forward(double[][,] matrixLst);
     }
 }

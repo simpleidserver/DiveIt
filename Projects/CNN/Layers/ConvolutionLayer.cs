@@ -36,7 +36,7 @@ namespace CNN.Layers
             _strideH = strideH;
         }
 
-        protected override decimal[,] Forward(decimal[,] matrix, int index)
+        protected override double[,] Forward(double[,] matrix, int index)
         {
             var convolutionResult = ConvolutionAlg.Transform(
                 matrix,
@@ -50,17 +50,17 @@ namespace CNN.Layers
         protected override void InitWeights(int inputLength)
         {
             if (Weights != null) return;
-            Weights = new List<decimal[,]>();
+            Weights = new List<double[,]>();
             var rnd = new Random();
             for (var i = 0; i < inputLength; i++)
             {
-                var kernel = new decimal[_kernelSize, _kernelSize];
+                var kernel = new double[_kernelSize, _kernelSize];
                 for (var x = 0; x < _kernelSize; x++)
                 {
                     for (var y = 0; y < _kernelSize; y++)
                     {
                         rnd.Next(-1, 1);
-                        kernel[y, x] = rnd.NextDecimal(-1, 1);
+                        kernel[y, x] = rnd.NextDouble(-1, 1);
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace CNN.Layers
             }
         }
 
-        protected override void InitBias(decimal[,] matrix)
+        protected override void InitBias(double[,] matrix)
         {
             if (Bias != null) return;
             var outputShape = ConvolutionAlg.GetOutputShape(
@@ -77,13 +77,13 @@ namespace CNN.Layers
                 _padding,
                 _strideW,
                 _strideH);
-            Bias = new decimal[outputShape.height, outputShape.width];
+            Bias = new double[outputShape.height, outputShape.width];
             var rnd = new Random();
             for (var y = 0; y < outputShape.height; y++)
             {
                 for (var x = 0; x < outputShape.width; x++)
                 {
-                    Bias[y, x] = rnd.NextDecimal(-1, 1);
+                    Bias[y, x] = rnd.NextDouble(-1, 1);
                 }
             }
         }

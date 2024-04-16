@@ -2,11 +2,11 @@
 
 public class PoolingAlg
 {
-    public static decimal[,] MaxPool(decimal[,] inputMatrix, int poolWidth, int poolHeight)
+    public static double[,] MaxPool(double[,] inputMatrix, int poolWidth, int poolHeight)
     {
-        var result = new decimal[
-            (int)Math.Round((decimal)(inputMatrix.GetLength(0) / poolHeight)),
-            (int)Math.Round((decimal)(inputMatrix.GetLength(1) / poolWidth))
+        var result = new double[
+            (int)Math.Round((double)(inputMatrix.GetLength(0) / poolHeight)),
+            (int)Math.Round((double)(inputMatrix.GetLength(1) / poolWidth))
         ];
         for (var y = 0; y < result.GetLength(0); y++)
         {

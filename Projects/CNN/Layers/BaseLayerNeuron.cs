@@ -2,15 +2,15 @@
 {
     public abstract class BaseLayerNeuron : ILayerNeuron
     {
-        public List<decimal[,]>? Weights { get; protected set; } = null;
+        public List<double[,]>? Weights { get; protected set; } = null;
 
-        public decimal[,]? Bias { get; set; } = null;
+        public double[,]? Bias { get; set; } = null;
 
-        public decimal[,] Forward(decimal[][,] matrixLst)
+        public double[,] Forward(double[][,] matrixLst)
         {
             InitWeights(matrixLst.Count());
             InitBias(matrixLst.First());
-            var result = (decimal[,])Bias.Clone();
+            var result = (double[,])Bias.Clone();
             for (var i = 0; i < matrixLst.Count(); i++)
             {
                 result = MatrixHelper.Sum(result, Forward(matrixLst[i], i));
@@ -19,10 +19,10 @@
             return result;
         }
 
-        protected abstract decimal[,] Forward(decimal[,] matrix, int index);
+        protected abstract double[,] Forward(double[,] matrix, int index);
 
         protected abstract void InitWeights(int inputLength);
 
-        protected abstract void InitBias(decimal[,] matrix);
+        protected abstract void InitBias(double[,] matrix);
     }
 }

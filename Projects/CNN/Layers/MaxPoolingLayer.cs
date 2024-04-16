@@ -13,13 +13,21 @@ namespace CNN.Layers
             _poolHeight = poolHeight;
         }
 
-        public decimal[][,] Forward(decimal[][,] matrixLst)
+        private double[][,] _lastInput;
+
+        public double[][,] Forward(double[][,] matrixLst)
         {
-            var result = new decimal[matrixLst.Length][,];
+            var result = new double[matrixLst.Length][,];
             for(var i = 0; i < matrixLst.Length; i++)
                 result[i] = PoolingAlg.MaxPool(matrixLst[i], _poolWidth, _poolHeight);
 
+            _lastInput = matrixLst;
             return result;
+        }
+
+        public void Backward()
+        {
+
         }
     }
 }

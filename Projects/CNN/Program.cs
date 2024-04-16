@@ -10,11 +10,11 @@ using CNN.Layers;
 void TrainHandWritter()
 {
     var rnd = new Random();
-    var tt = rnd.NextDecimal(-1, 1);
+    var tt = rnd.NextDouble(-1, 1);
 
     // Read data.
     var content = File.ReadAllLines("c:\\Projects\\DiveIt\\Projects\\CNN\\A_Z Handwritten Data.csv")
-        .Select(s => s.Split(',').Select(n => decimal.Parse(n)));
+        .Select(s => s.Split(',').Select(n => double.Parse(n)));
     var trainSize = 0.2;
     var numberToTrain = (int)(content.Count() * trainSize);
     var trainData = content.Take(numberToTrain);
@@ -32,9 +32,9 @@ void TrainHandWritter()
 
 void TestMaxPooling()
 {
-    var data = new decimal[][,]
+    var data = new double[][,]
     {
-        new decimal[,]
+        new double[,]
         {
             { 2, 2, 7, 3 },
             { 9, 4, 6, 1 },
@@ -49,9 +49,9 @@ void TestMaxPooling()
 
 void TestSoftmaxLayer()
 {
-    var data = new decimal[][,]
+    var data = new double[][,]
     {
-        new decimal[,]
+        new double[,]
         {
             { 2, 2, 7, 3 },
             { 9, 4, 6, 1 }
@@ -62,8 +62,8 @@ void TestSoftmaxLayer()
     network.Predict(data);
 }
 
-TrainHandWritter();
-// TestMaxPooling();
+// TrainHandWritter();
+TestMaxPooling();
 // TestSoftmaxLayer();
 // ExtractGrayScale();
 // Convulation();
