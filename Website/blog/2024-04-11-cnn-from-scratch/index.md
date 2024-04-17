@@ -152,7 +152,7 @@ TODO
 
 ### Backward propagation
 
-
+TODO
 
 ## Resources
 

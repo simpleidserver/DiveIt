@@ -3,8 +3,14 @@ using CNN.Extensions;
 
 namespace CNN.Layers
 {
-    public class ConvolutionLayer : BaseLayer<ConvolutionLayerNeuron>
+    public class ConvolutionLayer : ILayer
     {
+        private readonly int _nbFilters;
+        private readonly int _kernelSize;
+        private readonly int _padding;
+        private readonly int _strideW;
+        private readonly int _strideH;
+
         public ConvolutionLayer(
             int nbFilters,
             int kernelSize,
@@ -12,78 +18,82 @@ namespace CNN.Layers
             int strideW = 1,
             int strideH = 1)
         {
-            for (var o = 0; o < nbFilters; o++)
-                Neurons.Add(new ConvolutionLayerNeuron(kernelSize, padding, strideW, strideH));
-        }
-    }
-
-    public class ConvolutionLayerNeuron : BaseLayerNeuron
-    {
-        private readonly int _kernelSize;
-        private readonly int _padding;
-        private readonly int _strideW;
-        private readonly int _strideH;
-
-        public ConvolutionLayerNeuron(
-            int kernelSize, 
-            int padding = 1, 
-            int strideW = 1, 
-            int strideH = 1)
-        {
+            _nbFilters = nbFilters;
             _kernelSize = kernelSize;
             _padding = padding;
             _strideW = strideW;
             _strideH = strideH;
+            for (var o = 0; o < nbFilters; o++)
+                Neurons.Add(new ConvolutionLayerNeuron(kernelSize));
         }
 
-        protected override double[,] Forward(double[,] matrix, int index)
+        public List<ConvolutionLayerNeuron> Neurons { get; set; } = new List<ConvolutionLayerNeuron>();
+
+        public double[,,] Forward(double[,,] matrix)
         {
-            var convolutionResult = ConvolutionAlg.Transform(
-                matrix,
-                Weights[index],
+            // take only the first matrix.
+            var firstMatrix = matrix.TransformFirstRecordInto2DArray();
+            var outputShape = ConvolutionAlg.GetOutputShape(firstMatrix,
+                (width: _kernelSize, height: _kernelSize),
                 _padding,
                 _strideW,
                 _strideH);
-            return convolutionResult;
-        }
-
-        protected override void InitWeights(int inputLength)
-        {
-            if (Weights != null) return;
-            Weights = new List<double[,]>();
-            var rnd = new Random();
-            for (var i = 0; i < inputLength; i++)
+            var portions = ConvolutionAlg.GetPortions(firstMatrix,
+                (width: _kernelSize, height: _kernelSize),
+                _padding,
+                _strideW,
+                _strideH);
+            var result = new double[outputShape.height, outputShape.width, _nbFilters];
+            foreach (var portion in portions)
             {
-                var kernel = new double[_kernelSize, _kernelSize];
-                for (var x = 0; x < _kernelSize; x++)
+                // all filters * region
+                // sum each region and obtain an array.
+                for (var n = 0; n < Neurons.Count; n++)
                 {
-                    for (var y = 0; y < _kernelSize; y++)
-                    {
-                        rnd.Next(-1, 1);
-                        kernel[y, x] = rnd.NextDouble(-1, 1);
-                    }
+                    var neuron = Neurons[n];
+                    var conv = neuron.Forward(portion.Item1);
+                    result[portion.Item3, portion.Item2, n] = conv;
                 }
-
-                Weights.Add(kernel);
             }
+
+            // TODO : Check the implementation is correct !!!
+            return result;
         }
 
-        protected override void InitBias(double[,] matrix)
+        public double[,,] Backward(double[,,] matrix)
         {
-            if (Bias != null) return;
-            var outputShape = ConvolutionAlg.GetOutputShape(
-                matrix,
-                Weights.First(),
-                _padding,
-                _strideW,
-                _strideH);
-            Bias = new double[outputShape.height, outputShape.width];
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ConvolutionLayerNeuron
+    {
+        private readonly int _kernelSize;
+
+        public ConvolutionLayerNeuron(
+            int kernelSize)
+        {
+            _kernelSize = kernelSize;
+            InitWeights();
+        }
+
+        public double[,]? Weights { get; protected set; } = null;
+
+        public double Forward(double[,] matrix)
+        {
+            return ArrayHelper.Conv(matrix, Weights);
+        }
+
+        private void InitWeights()
+        {
             var rnd = new Random();
-            for (var y = 0; y < outputShape.height; y++)
+            Weights = new double[_kernelSize, _kernelSize];
+            for (var x = 0; x < _kernelSize; x++)
             {
-                for (var x = 0; x < outputShape.width; x++)
+                for (var y = 0; y < _kernelSize; y++)
                 {
-                    Bias[y, x] = rnd.NextDouble(-1, 1);
+                    rnd.Next(-1, 1);
+                    Weights[y, x] = rnd.NextDouble(-1, 1) / 9;
                 }
             }
         }

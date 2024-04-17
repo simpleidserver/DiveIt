@@ -12,8 +12,8 @@ public class PoolingAlg
         {
             for (var x = 0; x < result.GetLength(1); x++)
             {
-                var portion = MatrixHelper.GetPortion(inputMatrix, poolWidth, poolHeight, x * poolWidth, y * poolHeight);
-                result[y, x] = MatrixHelper.Max(portion);
+                var portion = ArrayHelper.GetPortion(inputMatrix, poolWidth, poolHeight, x * poolWidth, y * poolHeight);
+                result[y, x] = ArrayHelper.Max(portion);
             }
         }
 

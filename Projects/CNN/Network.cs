@@ -8,31 +8,43 @@ namespace CNN
 
         private NetworkForwardResult Forward(double[,] data, int label)
         {
-            var output = new double[1][,]
-            {
-                data
-            };
+            var output = ArrayHelper.TransformTo3D(data);
             foreach (var layer in Layers)
                 output = layer.Forward(output);
 
             // Calculate the cross-entropy loss.
-            var probs = output.Select(s => s[0, 0]).ToList();
+            var probs = new double[output.GetLength(2)];
+            for (int i = 0; i < output.GetLength(2); i++)
+                probs[i] = output[0, 0, i];
+            var probLst = probs.ToList();
             var crossEntropyLoss = -Math.Log(probs.ElementAt(label));
-            var predictedLabel = probs.IndexOf(probs.Max());
+            var predictedLabel = probLst.IndexOf(probs.Max());
             var result = new NetworkForwardResult { Output = probs.ToArray(), Loss = crossEntropyLoss };
             if (predictedLabel == label)
                 result.IsCorrect = true;
             return result;
         }
 
-        private void Train(
+        private NetworkForwardResult Train(
             double[,] data, 
             int label)
         {
             var forwardResult = Forward(data, label);
             var gradient = new double[forwardResult.Output.Length];
             gradient[label] = -1 / forwardResult.Output[label];
-            // TODO
+            var grads = ArrayHelper.TransformTo3D(gradient);
+            var lastLayer = Layers.Last();
+            lastLayer.Backward(grads);
+
+            /*
+            for(var i = Layers.Count - 1; i >= 0; i--)
+            {
+                var layer = Layers[i];
+                layer.Backward(grads);
+            }
+            */
+
+            return forwardResult;
         }
 
         public void Train(
@@ -45,45 +57,25 @@ namespace CNN
             {
                 var trainData = trainX[i];
                 var label = (int)trainY[i];
-                Train(trainData, label);
-
-                /*
-                var output = new double[1][,]
-                {
-                    trainImage
-                };
-                foreach (var layer in Layers)
-                    output = layer.Forward(output);
-
-                // calculate cross-entropy loss:
-                var probs = output.Select(s => s[0, 0]).ToList();
-                var crossEntropyLoss = -Math.Log(probs.ElementAt(label));
-                var predictedLabel = probs.IndexOf(probs.Max());
-                loss += crossEntropyLoss;
-                if (predictedLabel == label)
-                    nbCorrect++;
-
-                if(i % 100 == 99)
+                var trainResult = Train(trainData, label);
+                if (i % 100 == 99)
                 {
                     Console.WriteLine($"[Step {i}] Average loss : {loss / 100}, Accuracy: {nbCorrect}%");
                     loss = 0;
                     nbCorrect = 0;
                 }
-                */
+
+                loss += trainResult.Loss;
+                if (trainResult.IsCorrect)
+                    nbCorrect++;
             }
         }
 
-        public void Predict(double[][,] dataLst)
+        public void Predict(double[,,] dataLst)
         {
-            for(var i = 0; i < dataLst.Length; i++)
-            {
-                var output = new double[1][,]
-                {
-                    dataLst[i]
-                };
-                foreach (var layer in Layers)
-                    output = layer.Forward(output);
-            }
+            var output = dataLst;
+            foreach (var layer in Layers)
+                output = layer.Forward(output);
         }
 
         public class NetworkForwardResult
