@@ -56,7 +56,6 @@ namespace CNN.Layers
                 }
             }
 
-            // TODO : Check the implementation is correct !!!
             return result;
         }
 
@@ -70,6 +69,11 @@ namespace CNN.Layers
     {
         private readonly int _kernelSize;
 
+        public ConvolutionLayerNeuron()
+        {
+            
+        }
+
         public ConvolutionLayerNeuron(
             int kernelSize)
         {
@@ -77,7 +81,7 @@ namespace CNN.Layers
             InitWeights();
         }
 
-        public double[,]? Weights { get; protected set; } = null;
+        public double[,]? Weights { get; set; } = null;
 
         public double Forward(double[,] matrix)
         {
@@ -92,7 +96,6 @@ namespace CNN.Layers
             {
                 for (var y = 0; y < _kernelSize; y++)
                 {
-                    rnd.Next(-1, 1);
                     Weights[y, x] = rnd.NextDouble(-1, 1) / 9;
                 }
             }

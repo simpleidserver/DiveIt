@@ -8,18 +8,36 @@ using CNN.Layers;
 
 void TrainHandWritter()
 {
+    // CONV :
+    // images = np.array([[0,1,2,3,4],[5,6,7,8,9],[10,11,12,14,15]])
+    // array([[[-0.16695259, -0.19559588,  0.00095058],
+    //  [ 0.0667812 , -0.01323354,  0.02633286],
+    //  [-0.0693899 ,  0.02499117,  0.02315857]],
+    // 
+    // [[ 0.09233382,  0.01851037,  0.02374835],
+    //  [-0.23014707, -0.18702714,  0.0176147 ],
+    //  [-0.13144203,  0.09536866,  0.10891081]]])
+    // output = array([[[ 0.10404682, -1.04202347],
+    // [-0.17575214, -1.12524218],
+    //    [-0.45371849, -1.22200303]]])
+
+    // MAX POOL
+    // images = np.array([[[0,1,2,4],[2,3,4,5]],[[6,7,8,9],[10,11,12,14]]])
+    // output : array([[[10., 11., 12., 14.]]])
+
     // Read data.
     var content = File.ReadAllLines("c:\\Projects\\DiveIt\\Projects\\CNN\\A_Z Handwritten Data.csv")
         .Select(s => s.Split(',').Select(n => double.Parse(n)));
     var trainSize = 0.2;
     var numberToTrain = (int)(content.Count() * trainSize);
     var trainData = content.Take(numberToTrain);
-    var trainX = trainData.Select(s => ArrayHelper.Reshape(s.Skip(1).ToArray(), 28, 28)).ToArray();
+
+    var trainX = trainData.Select(s => ArrayHelper.Reshape(s.Skip(1).Select(i => (i / 255) - 0.5).ToArray(), 28, 28)).ToArray();
     var trainY = trainData.Select(s => s.First()).ToArray();
 
     // train the model.
     var network = new Network();
-    network.Layers.Add(new ConvolutionLayer(8, 3));
+    network.Layers.Add(new ConvolutionLayer(8, 3, 0));
     network.Layers.Add(new MaxPoolingLayer(2, 2));
     network.Layers.Add(new SoftmaxLayer(10));
     network.Train(trainX, trainY);
@@ -31,20 +49,12 @@ void TestMaxPooling()
     var data = new double[,,]
     {
         {
-            { 2, 2, 7, 3 },
-            { 9, 4, 6, 1 }
+            { 0, 1, 2, 4 },
+            { 2,3,4,5 }
         },
         {
-            { 9, 4, 6, 1 },
-            { 9, 4, 6, 1 }
-        },
-        {
-            { 8, 5, 2, 4 },
-            { 9, 4, 6, 1 }
-        },
-        {
-            { 3, 1, 2, 6 },
-            { 9, 4, 6, 1 }
+            { 6,7,8,9 },
+            { 10,11,12,14 }
         }
     };
     var network = new Network();
@@ -52,22 +62,63 @@ void TestMaxPooling()
     network.Predict(data);
 }
 
-/*
-void TestSoftmaxLayer()
+void TestConv()
 {
-    var data = new double[][,]
+    // [[0,1,2,3,4],[5,6,7,8,9],[10,11,12,14,15]]
+    var data = new double[,,]
     {
-        new double[,]
         {
-            { 2, 2, 7, 3 },
-            { 9, 4, 6, 1 }
+            { 0,1,2,3,4 },
+            { 5,6,7,8,9 },
+            { 10,11,12,14,15 }
         }
     };
     var network = new Network();
-    network.Layers.Add(new SoftmaxLayer(2));
+    var convol = new ConvolutionLayer(2, 3, 0);
+    convol.Neurons.Clear();
+    convol.Neurons.Add(new ConvolutionLayerNeuron
+    {
+        Weights = new double[,]
+        {
+            { -0.16695259, -0.19559588,  0.00095058 },
+            { 0.0667812 , -0.01323354,  0.02633286 },
+            { -0.0693899 ,  0.02499117,  0.02315857 }
+        }
+    });
+    convol.Neurons.Add(new ConvolutionLayerNeuron
+    {
+        Weights = new double[,]
+        {
+            { 0.09233382,  0.01851037,  0.02374835 },
+            { -0.23014707, -0.18702714,  0.0176147 },
+            { -0.13144203,  0.09536866,  0.10891081 }
+        }
+    });
+    network.Layers.Add(convol);
     network.Predict(data);
 }
-*/
+
+void TestSoftmaxLayer()
+{
+    var data = new double[,,]
+    {
+        {
+            { 10, 11, 12, 14 }
+        }
+    };
+    var network = new Network();
+    network.Layers.Add(new SoftmaxLayer(2)
+    {
+        Weights = new double[,]
+        {
+            { 0.18738502, -0.0596138 },
+            { -0.37713842,  0.16951041 },
+            { 0.24996534,  0.18204466 },
+            { 0.02242946, -0.0404026 }
+        }
+    });
+    network.Predict(data);
+}
 
 void Dot()
 {
@@ -125,6 +176,7 @@ void Reshape()
 }
 */
 
+// TestConv();
 // TestMaxPooling();
 // Transpose();
 // Reshape();

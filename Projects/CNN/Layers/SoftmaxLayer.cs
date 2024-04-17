@@ -35,7 +35,7 @@ namespace CNN.Layers
             _lastTotals = result;
             var totals = ArrayHelper.Exp(result);
             var sumExp = totals.Sum();
-            var r = ArrayHelper.Divide(result, sumExp);
+            var r = ArrayHelper.Divide(totals, sumExp);
             return ArrayHelper.TransformTo3D(r);
         }
 
@@ -91,9 +91,6 @@ namespace CNN.Layers
         {
             if (Bias != null) return;
             Bias = new double[_nbClasses];
-            var rnd = new Random();
-            for(var m = 0; m < _nbClasses; m++)
-                Bias[m] = rnd.NextDouble(-1, 1);
         }
 
         private void InitWeights(double[,,] matrix)
