@@ -69,7 +69,6 @@ Here is the `K-batch async SGD` algorithm.
 
 Algorithm for the PS server to update the parameters `w` and `itp` of a complex-shaped linear function.
 
-```
 1. Define the number of learning nodes `N`.
 2. Define the number of mini-batch `K` required to update the model parameters.
 3. Define the number of iterations  `epoch`.
@@ -89,11 +88,9 @@ Algorithm for the PS server to update the parameters `w` and `itp` of a complex-
    7.3 $w_{j+1} = w_{j} - \frac{\eta}{K} \sum_{l=1}^{K} (nwi)$
 
    7.4 $itp = itp - \eta * \sum_{\eta}^{K}(nitpi)$
-```
 
 Algorithm for a learning node to calculate the gradient of a complex-shaped linear function.
 
-```
 1. Receive the mini-batch `tx` and `ty`.
 2. Receive the parameter `w`.
 3. Receive the parameter `itp`.
@@ -101,7 +98,6 @@ Algorithm for a learning node to calculate the gradient of a complex-shaped line
 5. Calculate the gradient $g = \frac{1}{N} \sum_{i}^{N} -2 * wT * tx * (ty - (itp + w*tx))$
 6. Calculate the intercept $itp = \frac{1}{N} * \sum_{i}^{N} -2 * itp * (ty - (itp + w*tx))$
 7. Send the variables `g` and `itp` to the PS server.
-```
 
 ## GPU
 
@@ -199,18 +195,16 @@ To choose a library, you should check if it supports the following points. They 
 * Capable of supporting parallelism.
 * Capable of supporting execution on one or multiple GPUs.
 
-The source code of the project can be found here [https://github.com/simpleidserver/DiveIt/Projects/SGDOptimization](https://github.com/simpleidserver/DiveIt/Projects/SGDOptimization).
+The source code of the project can be found here [https://github.com/simpleidserver/DiveIt/tree/main/Projects/SGDOptimization](https://github.com/simpleidserver/DiveIt/tree/main/Projects/SGDOptimization).
 
 ## Ressources
 
-https://eurocc.cyi.ac.cy/wp-content/uploads/2ndIntermediate-GPUCUDA.pdf, GPU programming using CUDA
-
-https://wlandau.github.io/gpu/lectures/cublas-cula/cublas-cula.pdf, The CUBLAS and CULA librarie
-
-https://www.bealto.com/gpu-gemv_v2.html, GPU matrix-vector product
-
-https://github.com/ecrc/kblas-gpu/blob/8af76dc862c74cbe880569ff2ccf6e5e54245430/src/blas_l2/sgemv.cu, KBLAS is a high performance CUDA library for subset of BLAS and LAPACK routines optimized for NVIDIA GPUs.
-
-https://docs.nvidia.com/cuda/cublas/index.html, CUDA.
+| Link |
+| ----- |
+| https://eurocc.cyi.ac.cy/wp-content/uploads/2ndIntermediate-GPUCUDA.pdf, GPU programming using CUDA |
+| https://wlandau.github.io/gpu/lectures/cublas-cula/cublas-cula.pdf, The CUBLAS and CULA librarie |
+| https://www.bealto.com/gpu-gemv_v2.html, GPU matrix-vector product |
+| https://github.com/ecrc/kblas-gpu/blob/8af76dc862c74cbe880569ff2ccf6e5e54245430/src/blas_l2/sgemv.cu, KBLAS is a high performance CUDA library for subset of BLAS and LAPACK routines optimized for NVIDIA GPUs. |
+| https://docs.nvidia.com/cuda/cublas/index.html, CUDA. |
 
 <GiscusComponent />
