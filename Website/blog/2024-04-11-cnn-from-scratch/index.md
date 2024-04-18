@@ -1,20 +1,60 @@
 # Implement Convolutional Neural Network from scratch
 
-## Neural network architecture
+Dans cet article, nous allons expliquer comment écrire de a à z en C#, un réseau neuronal de type Convolutional (CNN), capable de reconnaître le chiffre présent dans une image.
 
-Un reseau neuronal est composé de plusieurs couches de neurones interconnectés. Les couches sont organisées en trois types :
+Si vous êtes familié avec le concept de réseau neuronal, je vous invite à ignorer ce chapitre et passer au suivant.
 
-1. Input layer : The input layer consists of neurons representing the features of the input data. Each neuron corresponds to a feature, and its value represents the feature’s value.
+## Neural Network Architecture
 
-2. Hidden layers : Entre la couche d'entrée et la couche de sortie, il peut y avoir une ou plusieurs couches cachées. Chaque neurone d'une couche cachée, reçoit des données de la couche précédente, applique un `weighted sum`, ajoute un `bias term` et passe le résultat à une fonction d'activation.
+Un reseau neuronal est composé de plusieurs couches interconnectés les unes aux autres, via les neurones qui les constituent.
 
-3. Output layer : produit le résultat de la prédiction. Le nombre de neurones dépend de la nature de la prédiction, par exemple pour une classification binaire, il peut y avoir un neurone par classe, avec la probablité d'appartenir à cette classe.
+Il existe trois types de couche.
 
-Les paramètres pour chaque neurone :
+[DIAGRAMME_NEURAL_NETWORK]
 
-* **Connection Weights** : mesure le poids entre deux neurones. Chaque connection, d'une neurone A vers un neurone B, possède un poids.
-* **Bias terms** : Chaque neurone possède un `bias term`. 
-* **Activation function** : Chaque neurone applique une fonction d'activation sur le `weighted sum` et le bias. Quelques exemples de fonction d'activation : RELU.
+### 1. Input Layer
+
+The input layer consists of neurons representing the features of the input data. Each neuron corresponds to a feature, and its value represents the feature’s value.
+
+### 2. Hidden Layer
+
+Entre la couche d'entrée et celle de sortie, il peut exister plusieurs couches cachées.
+De manière générale, chaque neurone d'une couche cachée est connectée à tous les neurones de la couche précédente, on dit que la couche est `fully connected` ou de type `dense layer`.
+
+Une couche cachée possède deux paramètres :
+
+* **weights** : Chaque connection existante entre deux neurones possède une `weight`, ce paramètre a une influence sur la quantité d'information transmise entre deux neurones.
+
+* **bias** : Constante assignée à une couche.
+
+Ces deux paramètres interviennent dans la formule de calcul utilisée par le neurone.
+
+```
+output = inputs * weights + bias
+```
+
+Ces deux paramètres sont ajustés au cours du processus d'apprentissage, durant l'étape de `back propagation`.
+
+IMPORTANT : Il existe des couches où les paramètres `weights` et `bias` ne sont pas utiles.
+
+### 3. Output Layer
+
+La dernière couche du réseau neuronal, est la couche de sortie.
+Elle possède la même structure qu'une couche cachée, car elle est composée de plusieurs neurones et peut posséder les paramètres `weights` et `bias`.
+
+Cette dernière reçoit les informations de la dernière couche cachée, et effectue des calculs pour prédire ou classifier les données reçues.
+
+Selon la nature du problème, que le réseau neuronal tente de résoudre, vous pouvez choisir parmi l'une de ces couches :
+
+| Problème | Algorithme |
+| -------- | ---------- |
+| Classification de plus de deux classes | Softmax |
+| Classification binaire | Sigmoid |
+| Régression | Régression linéaire |
+
+### Propagation des données
+
+FORWARD PROPAGATION & BACKWARD PROPAGATION.
 
 ### Forward propagation
 
@@ -95,9 +135,9 @@ La formule pour calculer la taille de l'image en sortie, est mise à jour comme 
 
 Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia](https://en.wikipedia.org/wiki/Kernel_(image_processing)).
 
-| Filtre   | 
+| Filtre   |
 | -------- |
-| Identity | 
+| Identity |
 | Ridge or edge detection |
 
 ### Forward
@@ -108,9 +148,11 @@ TODO
 
 TODO
 
+EXAMPLE DE INPUT LAYER POUR CNN : L'input layer peut avoir 3 canneaux pour les couleurs RGB ou un seul pour les nuances de gris.
+
 ## Pooling layer
 
-L'algorithme réduit la taille de la matrice d'entrée, en appliquant une des opérations `max`, `min` ou `average` sur chaque fenêtre. 
+L'algorithme réduit la taille de la matrice d'entrée, en appliquant une des opérations `max`, `min` ou `average` sur chaque fenêtre.
 L'objectif est double :
 
 1. Réduire la dimension.
@@ -169,3 +211,4 @@ TODO
 | https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53, A Comprehensive Guide to Convolutional Neural Networks — the ELI5 way |
 | https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65, Neural Network from scratch in Python |
 | https://victorzhou.com/blog/softmax/, Softmax |
+| https://www.sciencedirect.com/topics/computer-science/convolutional-layer, Convolutional Layer | 
