@@ -1,5 +1,8 @@
 # Implement Convolutional Neural Network from scratch
 
+import Architecture from './images/architecture.jpg'
+import BackPropagation from './images/backpropagation.jpg'
+
 Dans cet article, nous allons expliquer comment écrire de a à z en C#, un réseau neuronal de type Convolutional (CNN), capable de reconnaître le chiffre présent dans une image.
 
 Si vous êtes familié avec le concept de réseau neuronal, je vous invite à ignorer ce chapitre et passer au suivant.
@@ -10,7 +13,9 @@ Un reseau neuronal est composé de plusieurs couches interconnectés les unes au
 
 Il existe trois types de couche.
 
-[DIAGRAMME_NEURAL_NETWORK]
+<div style={{textAlign: 'center'}}>
+    <img src={Architecture} height="300" />
+</div>
 
 ### 1. Input Layer
 
@@ -19,6 +24,7 @@ The input layer consists of neurons representing the features of the input data.
 ### 2. Hidden Layer
 
 Entre la couche d'entrée et celle de sortie, il peut exister plusieurs couches cachées.
+
 De manière générale, chaque neurone d'une couche cachée est connectée à tous les neurones de la couche précédente, on dit que la couche est `fully connected` ou de type `dense layer`.
 
 Une couche cachée possède deux paramètres :
@@ -27,15 +33,34 @@ Une couche cachée possède deux paramètres :
 
 * **bias** : Constante assignée à une couche.
 
-Ces deux paramètres interviennent dans la formule de calcul utilisée par le neurone.
+Ces deux paramètres interviennent dans la formule de calcul du `WeightedSum`.
 
-```
-output = inputs * weights + bias
-```
+$$
+SumWeighted = bias + \sum_{i=1}^{n}xi *weighti
+$$
 
 Ces deux paramètres sont ajustés au cours du processus d'apprentissage, durant l'étape de `back propagation`.
 
-IMPORTANT : Il existe des couches où les paramètres `weights` et `bias` ne sont pas utiles.
+Une fonction d'activation peut ensuite être appliquée sur le paramètre $$SumWeighted$$ calculé.
+De manière générale, le même type de fonction est choisi sur toutes les couches cachées. Le choix dépendra de la nature du réseau neuronal, par exemple un réseau de type CNN ou MLP utilise ReLU.
+
+Il existe plusieurs types de fonction dont voici la liste.
+
+$$
+output = f(SumWeighted)
+$$
+
+| Activation                         | Network type |
+| ---------------------------------- | ------------ |
+| Rectified Linear Activation (ReLU) | MLP,CNN      |
+| Logistic (Sigmoid)                 | RNN          |
+| Hyperbolic Tangent (Tanh)          | RNN          |
+
+:::danger
+
+Il existe des couches où les paramètres `weights`, `bias` et la fonction d'activation ne sont pas utilisées.
+
+:::
 
 ### 3. Output Layer
 
@@ -46,40 +71,97 @@ Cette dernière reçoit les informations de la dernière couche cachée, et effe
 
 Selon la nature du problème, que le réseau neuronal tente de résoudre, vous pouvez choisir parmi l'une de ces couches :
 
-| Problème | Algorithme |
-| -------- | ---------- |
-| Classification de plus de deux classes | Softmax |
-| Classification binaire | Sigmoid |
-| Régression | Régression linéaire |
+| Problème                               | Algorithme          |
+| -------------------------------------- | ------------------- |
+| Classification de plus de deux classes | Softmax             |
+| Classification binaire                 | Sigmoid             |
+| Régression                             | Régression linéaire |
 
-### Propagation des données
+### Algorithme d'entraînement d'un réseau neuronal
 
-FORWARD PROPAGATION & BACKWARD PROPAGATION.
+Maintenant que vous avez une vue d'ensemble des éléments qui constituent un réseau neuronal.
 
-### Forward propagation
+Nous allons expliquer les différentes étapes pour entraîner un réseau neuronal, dont voici les grandes lignes.
 
-Algorithme de forward :
-1. Les données en entrée sont assignées aux neurones.
+1. Initialiser les paramètres de toutes les couches : `weights` ou `bias`.
+2. Exécuter les points suivants `N` fois.
+2.1 Pour chaque couche exécuter l'étape de `forward propagation`.
+2.2 Calculer l'erreur.
+2.3 Pour chaque couche exécuter l'étape de `backward propagation`.
 
-2. Chaque neurone d'une couche cachée exécute ces opérations :
+#### 1. Initialisation des paramètres
 
-2.1. Weighted Sum (Z): Z = Σ(Wij * Xj) + bi, where Wij is the weight, Xj is the output of the j-th neuron in the previous layer, and bi is the bias of the current neuron.
+Les paramètres d'apprentissage des couches, comme `weights` et `bias` doivent être initialisées avec des valeurs aléatoires.
 
-2.2. Activation (A): A = σ(Z), where σ is the activation function.
+Selon la méthode [Xavier Initialization](https://cs230.stanford.edu/section/4/), cette étape est plus importante que l'on pense, car si les valeurs initiales sont trop grandes ou trop petites, alors l'entraînement du réseau neuronal devient inefficace. 
 
-TODO
+Selon la nature de la couche, il ne sera peut être pas nécessaire d'initialiser ces paramètres.
 
-### Backward propagation
+#### 2. Forward propagation
 
-TODO
+L'étape de `Forward propagation` est exécutée lorsqu'une couche reçoit les données d'une autre. Elle est constituée des étapes suivantes :
 
-## Convolutional Layer
+1. Pour chaque neurone calculer le `sum weighted` : $sm = \sum_{i=1}^{n}xi *wi$.
+
+1.1. $wi$ est la valeur du weight que le neurone possède avec le ième neurone.
+
+1.2. $xi$ est la valeur du ième neurone.
+
+2. Faire le somme du `sum-weighted` avec le paramètre `bias` :  $t = b + \sum_{i=1}^{n}xi *wi$.
+
+3. Appeler la fonction d'activation : $f(b + \sum_{i=1}^{n}xi *wi)$.
+
+#### 3. Calculer l'erreur
+
+Lorsque les données sont reçues de la dernière couche, le résultat peut être comparé avec celui attendu.
+La différence donne l'erreur que le réseau a fait durant sa prédiction.
+
+Il existe différentes methodes pour calculer l'erreur, encore une fois le choix dépendra de la nature du problème.
+
+| Problème                               | Fonction de calcul de la perte |
+| -------------------------------------- | ------------------------------ |
+| Classification de plus de deux classes | Cross Entropy Loss             |
+| Classification sur deux classes        | Logistic loss                  |
+
+#### 4. Backpropagation
+
+L'erreur calculée par la fonction de perte est ensuite propagée sur les différentes couches.
+
+C'est dans le processus de `Backpropagation` que l'apprentissage commence, l'objectif est de réduire le coût de la fonction de perte en ajustant les paramètres `weights` et `bias` des différentes couches.
+
+Le niveau d'ajustement des variables `weights` et `bias` est calculé par des gradients. Ils permettent de comprendre comment une variable comme le `weight` peut influer sur le résultat `E total`.
+
+$$
+\frac{\delta Etotal}{\delta weight}
+
+\frac{\delta Etotal}{\delta bias}
+$$
+
+<div style={{textAlign: 'center'}}>
+    <img src={BackPropagation} height="300" />
+</div>
+
+## Convolutional Neural Network (CNN)
+
+Le réseau neuronal adapté pour la reconnaissance d'image est de type Convolutional.
+
+L'architecture typique d'un réseau CNN est constituée de quatre couches.
+
+* Input layer : les données sont exposées sous deux formats différents.
+** Extraire l'image en trois matrices (RGB) de deux dimensions.
+** Extraire les nuances de gris de l'image en une matrice de deux dimensions.
+* First hidden layer : Convolutional layer.
+* Second hidden layer : Max pooling layer.
+* Output layer : softmax layer.
+
+[ARCHITECTURE]
+### 1. Convolutional Layer
 
 Réseau neuronal constitué de plusieurs couches convolutives, elle se base sur l'opération mathématique de `convolution`.
 
 Une couche de `convolution` possède un ensemble de filtres, dont chaque filtre est représenté sous la forme d'une matrice en deux dimensions.
 
-### Algorithme de convolution
+#### Algorithme de convolution
 
 L'algorithme de convolution est constitué des étapes suivantes :
 1. Lire et extraire les couleurs RGB de l'image.
@@ -98,7 +180,7 @@ L'algorithme est convultion est écrite sous cette forme mathématique :
 
 [MATH] https://web.pdx.edu/~jduh/courses/Archive/geog481w07/Students/Ludwig_ImageConvolution.pdf
 
-### Paramètre de padding
+#### Paramètre de padding
 
 En appliquant plusieurs couches de `convolution` successives, il existe un risque de perdre des pixels sur les bords de l'image.
 
@@ -116,7 +198,7 @@ En tenant compte de ce paramètre, la taille de la matrice de sortie est obtenue
 
 Dans beaucoup de cas, la valeur du padding est égale à `(kw-1,kh-1)`, pour que l'image en sortie ait la même taille que celle de l'image en entrée.
 
-### Paramètre stride
+#### Paramètre stride
 
 Pour chaque pixel de l'image, une fenêtre de convolution est appliquée.
 Cette opération peut être coûteuse en ressource, surtout lorsque l'algorithme est appliqué sur une image de grande taille.
@@ -131,7 +213,7 @@ La formule pour calculer la taille de l'image en sortie, est mise à jour comme 
 ((iw - kw + pw + sw) / sw, (ih - kh + ph + sh) / sh)
 ```
 
-### Filtres
+#### Filtres
 
 Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia](https://en.wikipedia.org/wiki/Kernel_(image_processing)).
 
@@ -139,14 +221,6 @@ Il existe plusieurs types de filtre, la liste complète se trouve sur [wikipedia
 | -------- |
 | Identity |
 | Ridge or edge detection |
-
-### Forward
-
-TODO
-
-### Backward
-
-TODO
 
 EXAMPLE DE INPUT LAYER POUR CNN : L'input layer peut avoir 3 canneaux pour les couleurs RGB ou un seul pour les nuances de gris.
 
@@ -212,3 +286,4 @@ TODO
 | https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65, Neural Network from scratch in Python |
 | https://victorzhou.com/blog/softmax/, Softmax |
 | https://www.sciencedirect.com/topics/computer-science/convolutional-layer, Convolutional Layer | 
+| https://medium.com/@nerdjock/deep-learning-course-lesson-5-forward-and-backward-propagation-ec8e4e6a8b92 |
