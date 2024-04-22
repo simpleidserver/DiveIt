@@ -14,10 +14,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="other-picture.png">
+    <None Update="1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="picture.png">
+    <None Update="A_Z Handwritten Data.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="mnist_train.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

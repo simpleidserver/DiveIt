@@ -1,4 +1,6 @@
-﻿namespace CNN.Layers
+﻿using System.Text.Json.Nodes;
+
+namespace CNN.Layers
 {
     public interface ILayer
     {

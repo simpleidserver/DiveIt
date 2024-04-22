@@ -4,12 +4,17 @@
     {
         #region Reshape
 
-        public static double[,,] TransformTo3D(double[,] arr)
+        public static double[,] TransformFirstRecordInto2DArray(double[,,] arr)
         {
-            var result = new double[1, arr.GetLength(0), arr.GetLength(1)];
-            for(var y = 0; y < arr.GetLength(0); y++)
-                for(var x = 0; x < arr.GetLength(1); x++)
-                    result[0, y, x] = arr[y, x];
+            var result = new double[arr.GetLength(1), arr.GetLength(2)];
+            for (var y = 0; y < arr.GetLength(1); y++)
+            {
+                for (var x = 0; x < arr.GetLength(2); x++)
+                {
+                    result[y, x] = arr[0, y, x];
+                }
+            }
+
             return result;
         }
 
@@ -23,7 +28,7 @@
 
         public static double[,,] TransformTo3D(double[] vector, int nb, int width, int height)
         {
-            var result = new double[nb, height,width];
+            var result = new double[nb, height, width];
             for (var n = 0; n < nb; n++)
             {
                 var skip = n * width * height;
@@ -39,144 +44,21 @@
             return result;
         }
 
-        #endregion
-
-        #region Array matrix manipulation
-
-        #endregion
-
-        #region Manipulate matrix
-
-        public static double Conv(double[,] matrixA, double[,] matrixB)
+        public static double[,,] TransformTo3D(double[,] arr)
         {
-            var height = matrixA.GetLength(0);
-            var width = matrixA.GetLength(1);
-            double result = 0;
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    result += matrixA[y, x] * matrixB[y, x];
-                }
-            }
-
-            return result;
-        }
-
-        public static double[,] Multiply(double[,] matrixA, double[,] matrixB)
-        {
-            var result = new double[matrixA.GetLength(0), matrixA.GetLength(1)];
-            for (var y = 0; y < matrixA.GetLength(0); y++)
-            {
-                for (var x = 0; x < matrixB.GetLength(1); x++)
-                {
-                    result[y,x] = matrixA[y, x] * matrixB[y, x];
-                }
-            }
-
-            return result;
-        }
-
-        public static double[,] Sum(double[,] matrixA, double[,] matrixB)
-        {
-            var height = matrixA.GetLength(0);
-            var width = matrixA.GetLength(1);
-            var result = new double[height, width];
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    result[y, x] = matrixA[y, x] + matrixB[y, x];
-                }
-            }
-
-            return result;
-        }
-
-        public static double[,] Substract(double[,] matrixA, double[,] matrixB)
-        {
-            var height = matrixA.GetLength(0);
-            var width = matrixA.GetLength(1);
-            var result = new double[height, width];
-            for (var y = 0; y < height; y++)
-                for (var x = 0; x < width; x++)
-                    result[y, x] = matrixA[y, x] - matrixB[y, x];
-
-            return result;
-        }
-
-        public static double[] MultiplyAndSum(double[,] matrix, double[] vector)
-        {
-            var result = new double[matrix.GetLength(0)];
-            for(var y = 0; y < matrix.GetLength(0); y++)
-            {
-                for(var x = 0; x < matrix.GetLength(1); x++)
-                {
-                    result[y] += matrix[y, x] * vector[x];
-                }
-            }
-
-            return result;
-        }
-
-        public static double[,] Multiply(double[,] matrix, double value)
-        {
-            var result = new double[matrix.GetLength(0), matrix.GetLength(1)];
-            for (var y = 0; y < matrix.GetLength(0); y++)
-                for (var x = 0; x < matrix.GetLength(1); x++)
-                    result[y,x] *= value;
-
-            return result;
-        }
-
-        public static double[,,] GetPortion(double[,,] matrix, int width, int height, int startX, int startY)
-        {
-            var result = new double[height, width, matrix.GetLength(2)];
-            for (var y = 0; y < result.GetLength(0); y++)
-                for (var x = 0; x < result.GetLength(1); x++)
-                {
-                    for(var c = 0; c < result.GetLength(2); c++)
-                    {
-                        result[y, x,c] = matrix[startY + y, startX + x, c];
-                    }
-                    
-                }
-
-            return result;
-        }
-
-        public static double[,] GetPortion(double[,] matrix, int width, int height, int startX, int startY)
-        {
-            var result = new double[height, width];
-            for (var y = 0; y < result.GetLength(0); y++)
-                for (var x = 0; x < result.GetLength(1); x++)
-                {
-                    result[y, x] = matrix[startY + y, startX + x];
-                }
-
-            return result;
-        }
-
-        public static double Max(double[,] matrix)
-        {
-            double result = default(double);
-            for (var y = 0; y < matrix.GetLength(0); y++)
-                for (var x = 0; x < matrix.GetLength(1); x++)
-                {
-                    var value = matrix[y, x];
-                    if (value > result)
-                        result = value;
-                }
-
+            var result = new double[1, arr.GetLength(0), arr.GetLength(1)];
+            for(var y = 0; y < arr.GetLength(0); y++)
+                for(var x = 0; x < arr.GetLength(1); x++)
+                    result[0, y, x] = arr[y, x];
             return result;
         }
 
         public static double[,] Reshape(double[] data, int width, int height)
         {
             var result = new double[height, width];
-            for(var y = 0; y < height; y++)
+            for (var y = 0; y < height; y++)
             {
-                for(var x = 0; x < width; x++)
+                for (var x = 0; x < width; x++)
                 {
                     var newIndex = (y * width) + x;
                     if (newIndex >= data.Length) return result;
@@ -193,9 +75,9 @@
             int i = 0;
             for (var m = 0; m < matrix.GetLength(0); m++)
             {
-                for(var y = 0; y < matrix.GetLength(1); y++)
+                for (var y = 0; y < matrix.GetLength(1); y++)
                 {
-                    for(var x = 0; x < matrix.GetLength(2); x++)
+                    for (var x = 0; x < matrix.GetLength(2); x++)
                     {
                         result[i] = matrix[m, y, x];
                         i++;
@@ -206,23 +88,9 @@
             return result;
         }
 
-        public static double[,] Transpose(double[,] matrix)
-        {
-            var result = new double[matrix.GetLength(1), matrix.GetLength(0)];
-            for(var x = 0; x < matrix.GetLength(1); x++)
-            {
-                for(var y = 0; y < matrix.GetLength(0); y++)
-                {
-                    result[x, y] = matrix[y, x];
-                }
-            }
-
-            return result;
-        }
-
         #endregion
 
-        #region Manipulate vector
+        #region Manipulate 1D array
 
         public static double[,] TransposeAndMultiplyWithNewAxis(double[] firstVector, double[] secondVector)
         {
@@ -241,12 +109,12 @@
         public static double[] Multiply(double[] vector, double[,] matrix)
         {
             var result = new double[matrix.GetLength(1)];
-            for(var x = 0; x < matrix.GetLength(1); x++)
+            for (var x = 0; x < matrix.GetLength(1); x++)
             {
                 double val = 0;
-                for(var y = 0; y < matrix.GetLength(0); y++)
+                for (var y = 0; y < matrix.GetLength(0); y++)
                 {
-                    val += matrix[y,x] * vector[y];
+                    val += matrix[y, x] * vector[y];
                 }
 
                 result[x] = val;
@@ -299,27 +167,133 @@
 
         #endregion
 
-        #region Max
+        #region Manipulate 2D array
+
+        public static double Conv(double[,] matrixA, double[,] matrixB)
+        {
+            var height = matrixA.GetLength(0);
+            var width = matrixA.GetLength(1);
+            double result = 0;
+            for (var y = 0; y < height; y++)
+            {
+                for (var x = 0; x < width; x++)
+                {
+                    result += matrixA[y, x] * matrixB[y, x];
+                }
+            }
+
+            return result;
+        }
+
+        public static double[,] Sum(double[,] matrixA, double[,] matrixB)
+        {
+            var height = matrixA.GetLength(0);
+            var width = matrixA.GetLength(1);
+            var result = new double[height, width];
+            for (var y = 0; y < height; y++)
+                for (var x = 0; x < width; x++)
+                    result[y, x] = matrixA[y, x] + matrixB[y, x];
+
+            return result;
+        }
+
+        public static double[,] Substract(double[,] matrixA, double[,] matrixB)
+        {
+            var height = matrixA.GetLength(0);
+            var width = matrixA.GetLength(1);
+            var result = new double[height, width];
+            for (var y = 0; y < height; y++)
+                for (var x = 0; x < width; x++)
+                    result[y, x] = matrixA[y, x] - matrixB[y, x];
+
+            return result;
+        }
+
+        public static double[] MultiplyAndSum(double[,] matrix, double[] vector)
+        {
+            var result = new double[matrix.GetLength(0)];
+            for(var y = 0; y < matrix.GetLength(0); y++)
+            {
+                for(var x = 0; x < matrix.GetLength(1); x++)
+                {
+                    result[y] += matrix[y, x] * vector[x];
+                }
+            }
+
+            return result;
+        }
+
+        public static double[,] Multiply(double[,] matrix, double value)
+        {
+            var result = new double[matrix.GetLength(0), matrix.GetLength(1)];
+            for (var y = 0; y < matrix.GetLength(0); y++)
+                for (var x = 0; x < matrix.GetLength(1); x++)
+                    result[y,x] = matrix[y,x] * value;
+
+            return result;
+        }
+
+        public static double[,] GetPortion(double[,] matrix, int width, int height, int startX, int startY)
+        {
+            var result = new double[height, width];
+            for (var y = 0; y < result.GetLength(0); y++)
+                for (var x = 0; x < result.GetLength(1); x++)
+                {
+                    result[y, x] = matrix[startY + y, startX + x];
+                }
+
+            return result;
+        }
 
         public static double[] Max(double[,,] arr)
         {
-            double max = 0;
+            var indexes = MaxIndexes(arr);
             var result = new double[arr.GetLength(2)];
-            for(var h = 0; h < arr.GetLength(0); h++)
+            for (var x = 0; x < arr.GetLength(2); x++)
+                result[x] = arr[indexes.h, indexes.y, x];
+            return result;
+        }
+
+        public static (int h, int y) MaxIndexes(double[,,] arr)
+        {
+            (int h, int y) r = new (0, 0);
+            double max = 0;
+            for (var h = 0; h < arr.GetLength(0); h++)
             {
-                for(var y = 0; y < arr.GetLength(1); y++)
+                for (var y = 0; y < arr.GetLength(1); y++)
                 {
                     var values = new double[arr.GetLength(2)];
-                    for(var x = 0; x < arr.GetLength(2); x++)
+                    for (var x = 0; x < arr.GetLength(2); x++)
                         values[x] = arr[h, y, x];
                     var newSum = values.Sum();
-                    if(newSum > max)
+                    if (newSum > max)
                     {
-                        result = values;
                         max = newSum;
+                        r.h = h;
+                        r.y = y;
                     }
                 }
             }
+
+            return r;
+        }
+
+        #endregion
+
+        #region Manipulate 3D array
+
+        public static double[,,] GetPortion(double[,,] matrix, int width, int height, int startX, int startY)
+        {
+            var result = new double[height, width, matrix.GetLength(2)];
+            for (var y = 0; y < result.GetLength(0); y++)
+                for (var x = 0; x < result.GetLength(1); x++)
+                {
+                    for (var c = 0; c < result.GetLength(2); c++)
+                    {
+                        result[y, x, c] = matrix[startY + y, startX + x, c];
+                    }
+
+                }
 
             return result;
         }

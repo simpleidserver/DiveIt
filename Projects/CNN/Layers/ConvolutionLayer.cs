@@ -1,5 +1,4 @@
-﻿using CNN.Algs;
-using CNN.Extensions;
+﻿using CNN.Extensions;
 
 namespace CNN.Layers
 {
@@ -10,6 +9,7 @@ namespace CNN.Layers
         private readonly int _padding;
         private readonly int _strideW;
         private readonly int _strideH;
+        private double[,,] _lastInput;
 
         public ConvolutionLayer(
             int nbFilters,
@@ -27,18 +27,21 @@ namespace CNN.Layers
                 Neurons.Add(new ConvolutionLayerNeuron(kernelSize));
         }
 
+        public double LearningRate { get; set; } = 0.005;
+
         public List<ConvolutionLayerNeuron> Neurons { get; set; } = new List<ConvolutionLayerNeuron>();
 
         public double[,,] Forward(double[,,] matrix)
         {
             // take only the first matrix.
-            var firstMatrix = matrix.TransformFirstRecordInto2DArray();
-            var outputShape = ConvolutionAlg.GetOutputShape(firstMatrix,
+            _lastInput = matrix;
+            var firstMatrix = ArrayHelper.TransformFirstRecordInto2DArray(matrix);
+            var outputShape = GetOutputShape(firstMatrix,
                 (width: _kernelSize, height: _kernelSize),
                 _padding,
                 _strideW,
                 _strideH);
-            var portions = ConvolutionAlg.GetPortions(firstMatrix,
+            var portions = GetPortions(firstMatrix,
                 (width: _kernelSize, height: _kernelSize),
                 _padding,
                 _strideW,
@@ -46,8 +49,6 @@ namespace CNN.Layers
             var result = new double[outputShape.height, outputShape.width, _nbFilters];
             foreach (var portion in portions)
             {
-                // all filters * region
-                // sum each region and obtain an array.
                 for (var n = 0; n < Neurons.Count; n++)
                 {
                     var neuron = Neurons[n];
@@ -61,7 +62,87 @@ namespace CNN.Layers
 
         public double[,,] Backward(double[,,] matrix)
         {
-            throw new NotImplementedException();
+            var firstMatrix = ArrayHelper.TransformFirstRecordInto2DArray(_lastInput);
+            var portions = GetPortions(firstMatrix,
+                (width: _kernelSize, height: _kernelSize),
+                _padding,
+                _strideW,
+                _strideH);
+            var gradientWeightNeurons = new Dictionary<int, double[,]>();
+            foreach(var portion in portions)
+            {
+                for(var f = 0; f < Neurons.Count; f++)
+                {
+                    var r = ArrayHelper.Multiply(
+                        portion.Item1,
+                        matrix[portion.Item3, portion.Item2, f]
+                    );
+                    
+                    if(!gradientWeightNeurons.ContainsKey(f))
+                        gradientWeightNeurons.Add(f, new double[_kernelSize, _kernelSize]);
+                    gradientWeightNeurons[f] = ArrayHelper.Sum(gradientWeightNeurons[f], r);
+                }
+            }
+
+            for(var f = 0; f < Neurons.Count; f++)
+            {
+                var neuron = Neurons[f];
+                neuron.Weights = ArrayHelper.Substract(neuron.Weights,
+                    ArrayHelper.Multiply(gradientWeightNeurons[f], LearningRate)
+                );
+            }
+
+            return null;
+        }
+
+        private static List<(double[,], int, int)> GetPortions(
+            double[,] picture,
+            (int width, int height) filterShape,
+            int padding = 1,
+            int strideW = 1,
+            int strideH = 1)
+        {
+            var resizedPicture = ResizePicture(picture, padding);
+            var outputShape = GetOutputShape(picture, filterShape, padding, strideW, strideH);
+            var result = new List<(double[,], int, int)>();
+            for (var y = 0; y < outputShape.height; y++)
+            {
+                for (var x = 0; x < outputShape.width; x++)
+                {
+                    var portion = ArrayHelper.GetPortion(
+                        resizedPicture,
+                        filterShape.width,
+                        filterShape.height,
+                        x * strideW,
+                        y * strideH);
+                    result.Add((portion, x, y));
+                }
+            }
+
+            return result;
+        }
+
+        private static (int height, int width) GetOutputShape(
+            double[,] picture,
+            (int width, int height) filterShape,
+            int padding = 1,
+            int strideW = 1,
+            int strideH = 1)
+        {
+            return (height: (picture.GetLength(0) - filterShape.height + padding * 2 + strideH) / strideH,
+                width: (picture.GetLength(1) - filterShape.width + padding * 2 + strideW) / strideW);
+        }
+
+        private static double[,] ResizePicture(double[,] picture, int padding)
+        {
+            var newHeight = picture.GetLength(0) + padding * 2;
+            var newWidth = picture.GetLength(1) + padding * 2;
+            var result = new double[newHeight, newWidth];
+            for (var y = 0; y < picture.GetLength(0); y++)
+                for (var x = 0; x < picture.GetLength(1); x++)
+                    result[y + padding, x + padding] = picture[y, x];
+
+            return result;
         }
     }
 
