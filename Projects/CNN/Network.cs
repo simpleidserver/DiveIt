@@ -1,4 +1,5 @@
 ﻿using CNN.Layers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CNN
 {
@@ -8,31 +9,36 @@ namespace CNN
 
         public void Train(
             double[][,] trainX,
-            double[] trainY)
+            double[] trainY,
+            int nbEpoch)
         {
-            double loss = 0;
-            int nbCorrect = 0;
-            for(var i = 0; i < trainX.Count(); i++)
+            for(var e = 0; e < nbEpoch; e++)
             {
-                var trainData = trainX[i];
-                var label = (int)trainY[i];
-                var trainResult = Train(trainData, label);
-                if (i % 100 == 99)
+                Console.WriteLine($"--- Epoch {e}");
+                double loss = 0;
+                int nbCorrect = 0;
+                for (var i = 0; i < trainX.Count(); i++)
                 {
-                    Console.WriteLine($"[Step {i}] Average loss : {loss / 100}, Accuracy: {nbCorrect}%");
-                    loss = 0;
-                    nbCorrect = 0;
-                }
+                    var trainData = trainX[i];
+                    var label = (int)trainY[i];
+                    var trainResult = Train(trainData, label);
+                    if (i % 100 == 99)
+                    {
+                        Console.WriteLine($"[Step {i}] Average loss : {loss / 100}, Accuracy: {nbCorrect}%");
+                        loss = 0;
+                        nbCorrect = 0;
+                    }
 
-                loss += trainResult.Loss;
-                if (trainResult.IsCorrect)
-                    nbCorrect++;
+                    loss += trainResult.Loss;
+                    if (trainResult.IsCorrect)
+                        nbCorrect++;
+                }
             }
         }
 
-        public double[,,] Predict(double[,,] dataLst)
+        public double[,,] Predict(double[,] data)
         {
-            var output = dataLst;
+            var output = ArrayHelper.TransformTo3D(data);
             foreach (var layer in Layers)
                 output = layer.Forward(output);
             return output;

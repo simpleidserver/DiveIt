@@ -1,26 +1,32 @@
 # Implement Convolutional Neural Network from scratch
 
-import Architecture from './images/architecture.jpg'
-import BackPropagation from './images/backpropagation.jpg'
-import CnnArchitecture from './imagges/cnn-architecture.jpg'
+import Architecture from './images/architecture.png'
+import BackPropagation from './images/backpropagation.png'
+import CnnArchitecture from './images/cnn-architecture.png'
 import NeuronConvolutional from './images/neuron-conv.png'
+import Banner from './images/banner.png'
 
+<div style={{textAlign: 'center'}}>
+    <img src={Banner} />
+</div>
 
+## Introduction
 
-Dans cet article, nous allons couvrir divers sujets théoriques, dans l'objectif d'implémenter un réseau neuronal en C#, capable de reconnaître un chiffre présente sur une image.
+In this article, we will cover various theoretical topics with the aim of implementing a neural network in C# that is capable of recognizing a digit present in an image.
 
-L'article se découpe en deux parties :
-1. Présenter les grands principes d'un réseau neuronal.
-2. Expliquer l'architecture d'un réseau de type Convolutional.
-3. Code source c#.
+The article is divided into three parts:
 
-Si vous êtes familié avec le concept de réseau neuronal, je vous invite à ignorer ce chapitre et passer au suivant.
+1. Presenting the key principles of a neural network.
+2. Explaining the architecture of a Convolutional Neural Network.
+3. C# source code.
+
+If you are familiar with the concept of neural networks, feel free to skip this chapter and proceed to the next.
 
 ## Neural Network Architecture
 
-Un reseau neuronal est composé de plusieurs couches interconnectés les unes aux autres, via les neurones qui les constituent.
+A neural network is composed of multiple interconnected layers, with neurons forming connections between them.
 
-Il existe trois types de couche.
+There are three types of layers.
 
 <div style={{textAlign: 'center'}}>
     <img src={Architecture} height="300" />
@@ -28,32 +34,33 @@ Il existe trois types de couche.
 
 ### 1. Input Layer
 
-The input layer consists of neurons representing the features of the input data. Each neuron corresponds to a feature, and its value represents the feature’s value.
+The input layer consists of neurons representing the features of the input data. Each neuron corresponds to a feature, and its value represents the value of that feature.
 
 ### 2. Hidden Layer
 
-Entre la couche d'entrée et celle de sortie, il peut exister plusieurs couches cachées.
+Between the input layer and the output layer, there can be multiple hidden layers.
 
-De manière générale, chaque neurone d'une couche cachée est connectée à tous les neurones de la couche précédente, on dit que la couche est `fully connected` ou de type `dense layer`.
+Generally, each neuron in a hidden layer is connected to all neurons in the preceding layer, a configuration known as a `fully connected` or `dense layer` type.
 
-Une couche cachée possède deux paramètres :
+A hidden layer has two parameters:
 
-* **weights** : Chaque connection existante entre deux neurones possède une `weight`, ce paramètre a une influence sur la quantité d'information transmise entre deux neurones.
+* **weights** : Each connection between two neurons has a `weight`, which is a parameter that influences the amount of information transmitted between them.
 
-* **bias** : Constante assignée à une couche.
+* **bias** : Constant assigned to a layer.
 
-Ces deux paramètres interviennent dans la formule de calcul du `WeightedSum`.
+These two parameters are part of the calculation formula for the `WeightedSum` :
 
 $$
 SumWeighted = bias + \sum_{i=1}^{n}xi *weighti
 $$
 
-Ces deux paramètres sont ajustés au cours du processus d'apprentissage, durant l'étape de `back propagation`.
+These two parameters are adjusted during the learning process, specifically during the `back propagation` step.
 
-Une fonction d'activation peut ensuite être appliquée sur le paramètre $$SumWeighted$$ calculé.
-De manière générale, le même type de fonction est choisi sur toutes les couches cachées. Le choix dépendra de la nature du réseau neuronal, par exemple un réseau de type CNN ou MLP utilise ReLU.
+An activation function can then be applied to the calculated parameter $$SumWeighted$$.
+Generally, the same type of function is chosen for all hidden layers.
+The choice depends on the nature of the neural network; for example, a CNN or MLP network typically uses ReLU.
 
-Il existe plusieurs types de fonction dont voici la liste.
+There are several types of functions, listed as follows.
 
 $$
 output = f(SumWeighted)
@@ -67,83 +74,82 @@ $$
 
 :::danger
 
-Il existe des couches où les paramètres `weights`, `bias` et la fonction d'activation ne sont pas utilisées.
+There are layers where the parameters `weights`, `bias` and the activation function are not used.
 
 :::
 
 ### 3. Output Layer
 
-La dernière couche du réseau neuronal, est la couche de sortie.
-Elle possède la même structure qu'une couche cachée, car elle est composée de plusieurs neurones et peut posséder les paramètres `weights` et `bias`.
+The final layer of the neural network is the output layer.
+It shares the same structure as a hidden layer as it comprises multiple neurons and may have the parameters `weights` and `bias`.
 
-Cette dernière reçoit les informations de la dernière couche cachée, et effectue des calculs pour prédire ou classifier les données reçues.
+This layer receives information from the last hidden layer and conducts computations to predict or classify the received data.
 
-Selon la nature du problème, que le réseau neuronal tente de résoudre, vous pouvez choisir parmi l'une de ces couches :
+Depending on the nature of the problem the neural network aims to solve, you can select one of these layers:
 
-| Problème                               | Algorithme          |
-| -------------------------------------- | ------------------- |
-| Classification de plus de deux classes | Softmax             |
-| Classification binaire                 | Sigmoid             |
-| Régression                             | Régression linéaire |
+| Problem                                 | Alg                 |
+| --------------------------------------- | ------------------- |
+| Classification of more than two classes | Softmax             |
+| Binary classification                   | Sigmoid             |
+| Regression                              | Linear regression   |
 
-### Algorithme d'entraînement d'un réseau neuronal
+### Neural network training algorithm
 
-Maintenant que vous avez une vue d'ensemble des éléments qui constituent un réseau neuronal.
+Now that you have an overview of the components that constitute a neural network.
 
-Nous allons expliquer les différentes étapes pour entraîner un réseau neuronal, dont voici les grandes lignes.
+We will explain the various steps to train a neural network, outlined as follows:
 
-1. Initialiser les paramètres de toutes les couches : `weights` ou `bias`.
-2. Exécuter les points suivants `N` fois.
-2.1 Pour chaque couche exécuter l'étape de `forward propagation`.
-2.2 Calculer l'erreur.
-2.3 Pour chaque couche exécuter l'étape de `backward propagation`.
+1. Initialize the parameters of all layers : `weights` ou `bias`.
+2. Execute the following steps `N` times.
+2.1 For each layer, execute the `forward propagation` step.
+2.2 Calculate the error.
+2.3 For each layer, execute the `backward propagation` step.
 
 #### 1. Initialisation des paramètres
 
-Les paramètres d'apprentissage des couches, comme `weights` et `bias` doivent être initialisées avec des valeurs aléatoires.
+The learning parameters of the layers, such as `weights` and `bias`, must be initialized with random values.
 
-Selon la méthode [Xavier Initialization](https://cs230.stanford.edu/section/4/), cette étape est plus importante que l'on pense, car si les valeurs initiales sont trop grandes ou trop petites, alors l'entraînement du réseau neuronal devient inefficace. 
+According to the [Xavier Initialization](https://cs230.stanford.edu/section/4/) method, this step is more crucial than one might think because if the initial values are too large or too small, then the training of the neural network becomes inefficient.
 
-Selon la nature de la couche, il ne sera peut être pas nécessaire d'initialiser ces paramètres.
+Depending on the nature of the layer, it may not be necessary to initialize these parameters.
 
 #### 2. Forward propagation
 
-L'étape de `Forward propagation` est exécutée lorsqu'une couche reçoit les données d'une autre. Elle est constituée des étapes suivantes :
+The `Forward propagation` step is executed when a layer receives data from another. It consists of the following steps:
 
-1. Pour chaque neurone calculer le `sum weighted` : $sm = \sum_{i=1}^{n}xi *wi$.
+1. For each neuron, calculate the `sum weighted` : $sm = \sum_{i=1}^{n}xi *wi$.
 
-1.1. $wi$ est la valeur du weight que le neurone possède avec le ième neurone.
+   1.1. $wi$ is the value of the weight that the neuron has with the i-th neuron.
 
-1.2. $xi$ est la valeur du ième neurone.
+   1.2. $xi$ is the value of the i-th neuron.
 
-2. Faire le somme du `sum-weighted` avec le paramètre `bias` :  $t = b + \sum_{i=1}^{n}xi *wi$.
+2. Add the `sum-weighted` to the  `bias` parameter :  $t = b + \sum_{i=1}^{n}xi *wi$.
 
-3. Appeler la fonction d'activation : $f(b + \sum_{i=1}^{n}xi *wi)$.
+3. Call the activation function:  $f(b + \sum_{i=1}^{n}xi *wi)$.
 
-#### 3. Calculer l'erreur
+#### 3. Calculate the error.
 
-Lorsque les données sont reçues de la dernière couche, le résultat peut être comparé avec celui attendu.
-La différence donne l'erreur que le réseau a fait durant sa prédiction.
+When data is received from the last layer, the result can be compared with the expected outcome. 
+The difference indicates the error that the network made during its prediction.
 
-Il existe différentes methodes pour calculer l'erreur, encore une fois le choix dépendra de la nature du problème.
+There are various methods to calculate the error; once again, the choice depends on the nature of the problem.
 
-| Problème                               | Fonction de calcul de la perte |
-| -------------------------------------- | ------------------------------ |
-| Classification de plus de deux classes | Cross Entropy Loss             |
-| Classification sur deux classes        | Logistic loss                  |
+| Problem                                 | Loss function                  |
+| --------------------------------------- | ------------------------------ |
+| Classification of more than two classes | Cross Entropy Loss             |
+| Binary classification                   | Logistic loss                  |
 
 #### 4. Backpropagation
 
-L'erreur calculée par la fonction de perte est ensuite propagée sur les différentes couches.
+The error calculated by the loss function is then propagated through the various layers.
 
-C'est dans le processus de `Backpropagation` que l'apprentissage commence, l'objectif est de réduire le coût de la fonction de perte en ajustant les paramètres `weights` et `bias` des différentes couches.
+The learning process begins with `Backpropagation` aiming to reduce the cost of the loss function by adjusting the parameters `weights` and `bias` of the different layers.
 
-Le niveau d'ajustement des variables `weights` et `bias` est calculé par des gradients. Ils permettent de comprendre comment une variable comme le `weight` peut influer sur le résultat `E total`.
+The degree of adjustment of the variables `weights` and `bias` is calculated by gradients.
+They help understand how a variable like the `weight` can influence the total result `Loss`.
 
 $$
-\frac{\delta Etotal}{\delta weight}
-
-\frac{\delta Etotal}{\delta bias}
+\frac{\delta Loss}{\delta weight} , \frac{\delta Loss}{\delta bias}
 $$
 
 <div style={{textAlign: 'center'}}>
@@ -152,49 +158,60 @@ $$
 
 ## Convolutional Neural Network (CNN)
 
-Le réseau neuronal adapté à la reconnaissance d'image est de type Convolutional.
+The neural network tailored for image recognition is of the Convolutional type.
 
-L'architecture typique d'un réseau CNN est constituée de quatre couches.
+The typical architecture of a CNN consists of four layers."
 
-* Input layer : Extraires les données d'une image sous l'un des deux formats :
+* Input layer : Extract the data from an image in one of the two formats:
 
-** Trois matrices RGB de deux dimensions.
-** Une matrice avec les nuances de gris de deux dimensions.
+  * Three two-dimensional RGB matrices.
+
+  * A two-dimensional matrix with grayscale values.
 
 * First hidden layer : Convolutional layer.
+
 * Second hidden layer : Max pooling layer.
+
 * Output layer : softmax layer.
 
 <div style={{textAlign: 'center'}}>
     <img src={CnnArchitecture} height="300" />
 </div>
 
+| Parameter | Value |
+| --------- | ----- |
+| Number of filters | 3 |
+| Kernel size | 3 |
+| Pool size | 2 |
+| Number of classes | 3 |
+
 ### 1. Convolutional Layer
 
-Avant de décrire la structure de cette couche, il est important de comprendre le concept de matrice de convolution.
+Before describing the structure of this layer, it is important to understand the concept of a convolution matrix.
 
-Une matrice de convolution, appelée aussi kernel, est une matrice de deux dimensions. 
-Appliquée sur une image, elle permet d'obtenir divers effets, dont voici un exemple ci-dessous.
-Pour une liste complète des filtres, référez vous au site [wikipedia](https://en.wikipedia.org/wiki/Kernel_(image_processing)).
+A convolution matrix, also known as a kernel, is a two-dimensional matrix. 
+When applied to an image, it enables various effects, as demonstrated in the example below.
+ For a comprehensive list of filters, please refer to the [Wikipedia](https://en.wikipedia.org/wiki/Kernel_(image_processing)) website.
 
-
-| Opération              | Kernel             | Result                                       |
+| Operation              | Kernel             | Result                                       |
 | ---------------------- | ------------------ | -------------------------------------------- |
-| Détection des contours | [ -1 -1 -1 ]       | ![Edge detection](images/edge-detection.png) |
-|                        | [ -1  8 -1 ]       |                                              |
-|                        | [ -1 -1 -1 ]       |                                              |
+| Edge detection | ![Edge detection](images/edge-detection-matrix.png)       | ![Edge detection](images/edge-detection.png) |
 
-En supposant que l'image a été extraite en une matrice de nuance des gris de taille $$(imw * imh)$$.
-L'algorithme de convolution est constituée des étapes suivantes :
+Assuming the image has been extracted into a grayscale matrix of size $$(imw * imh)$$, the convolution algorithm consists of the following steps:
 
-1. Créer une matrice de convolution / kernel de taille $$(kw * kh)$$. Par défaut, la matrice aura une taille de 3x3.
-2. Créer une matrice de sortie de taille $$(imw - kw + 1) * (imh - kh + 1)$$.
-3. Récupérer toutes les fenêtres de l'image en entrée. Le centre de la matrice `kernel` est utilisé comme un pointeur, l'algorithme bouge le pointeur sur chaque colonne et chaque ligne de l'image. La zone concernée par le kernel, appelée aussi fenêtre, est alors stockée dans une liste windows.
-4. Pour chaque élément de la liste windows. 
-4.1. Multiplier la valeur par le kernel.
-4.2. Calculer la moyenne et stocker le résultat dans la matrice de sortie. 
+1. Create a convolution matrix/kernel of size $$(kw * kh)$$. By default, the matrix will have a size of 3x3.
 
-Pour résumer, voici l'équation mathématique pour calculer chaque élément de la matrice de sortie.
+2. Create an output matrix of size $$(imw - kw + 1) * (imh - kh + 1)$$.
+
+3. Retrieve all windows from the input image. The center of the kernel matrix is used as a pointer, and the algorithm moves the pointer over each column and each row of the image. The area covered by the kernel, also called a window, is then stored in a list called windows.
+
+4. For each element in the windows list:
+
+   4.1. Multiply the value by the kernel.
+
+   4.2. Calculate the average and store the result in the output matrix.
+
+To summarize, here is the mathematical equation to calculate each element of the output matrix.
 
 $$
 V=  \frac{\sum_{m}^{imgsize}\sum_{k}^{ksize}kernel(kx;ky) * img(mx,my)}{F}
@@ -202,33 +219,30 @@ $$
 
 * $$kernel(kx;ky)$$ : the coefficient of the convolution kernel at position kx,ky.
 * $$img(mx,my)$$ : the data of the pixel that corresponds to img(mx,my).
-* F : Sum of the coefficients of the kernel.
+* $$F$$ : Sum of the coefficients of the kernel.
 
-En appliquant cet algorithme plusieurs fois, il existe un risque de perdre des pixels sur les bords de l'image.
-Pour répondre à cette problématique, le paramètre `padding` a été introduit.
+By applying this algorithm multiple times, there is a risk of losing pixels on the edges of the image. To address this issue, the `padding` parameter has been introduced.
 
 #### Padding parameter
 
-Ce paramètre indique le nombre de pixels devant être ajoutés sur les bords de l'image.
+This parameter indicates the number of pixels to be added to the edges of the image.
 
-En supposant que le paramètre de padding est défini par la variable `p`, la taille de la matrice de sortie sera calculée comme suit :
+Assuming that the padding parameter is defined by the variable `p`, the size of the output matrix will be calculated as follows:
 
 $$
 (imw - kw + pw + 1) * (imh - kh + ph + 1)
 $$
 
-Dans beaucoup de cas, la valeur du padding est égale à $(kw-1,kh-1)$, afin que l'image en sortie ait la même taille que celle de l'image en entrée.
+In many cases, the padding value is set to $$(kw-1,kh-1)$$ so that the output image has the same size as the input image.
 
 #### Stride parameter
 
-Pour chaque pixel de l'image, une fenêtre de convolution est appliquée.
-Cette opération peut être coûteuse en ressource, surtout lorsque l'algorithme est appliqué sur une image de grande taille.
+For each pixel of the image, a convolution window is applied. This operation can be resource-intensive, especially when the algorithm is applied to a large image.
 
-Pour diminuer le nombre d'itérations, le paramètre `stride` a été introduit. 
-Il définit le nombre d'éléments devant être ignorés sur la largeur et la hauteur de l'image. 
-Par défault ce paramètre est égale à `(1,1)`.
+To decrease the number of iterations, the `stride` parameter has been introduced. 
+It defines the number of elements to be skipped in the width and height of the image. By default, this parameter is set to  `(1,1)`.
 
-En supposant que le paramètre stride est défini par la variable `s`, la taille de la matrice de sortie sera calculée comme suit :
+Assuming that the stride parameter is defined by the variable `s`, the size of the output matrix will be calculated as follows:
 
 $$
 ((imw - kw + pw + sw) / sw) * ((imh - kh + ph + sh) / sh)
@@ -236,17 +250,19 @@ $$
 
 #### Forward propagation
 
-Une couche de convolution est constituée de 1 ou plusieurs neurones, et chaque neurone possède une fenêtre de convolution distincte.
+A convolutional layer consists of 1 or more neurons, and each neuron has its own convolution window.
 
-Durant la phase de `forward propagation`, chaque neurone exécute l'algorithme de convolution sur une fenêtre de l'image.
+During the `forward propagation` phase, each neuron executes the convolution algorithm on a window of the image.
 
-Voici dans les grandes lignes, les étapes de l'algorithme de forward propagation.
+Here are the main steps of the forward propagation algorithm:
 
-1. Récupérer toutes les fenêtres de l'image en entrée.
-2. Pour chaque fenêtre d'entrée, exécuter l'algorithme de convolution de chaque neurone et stocker le résultat dans une liste.
-3. Stocker la liste dans la matrice de sortie.
+1. Retrieve all windows of the input image.
 
-Voici l'architecture d'un neurone d'une couche de convolution.
+2. For each input window, execute the convolution algorithm of each neuron and store the result in a list.
+
+3. Store the list in the output matrix.
+
+Here is the architecture of a neuron in a convolutional layer.
 
 <div style={{textAlign: 'center'}}>
     <img src={NeuronConvolutional} height="300" />
@@ -254,95 +270,101 @@ Voici l'architecture d'un neurone d'une couche de convolution.
 
 #### Backward propagation
 
-Sachant que dans l'article, la couche de convolution ne possède pas de paramètre biais et de fonction d'activation.
-L'algorithme de `backward propagation` revient à calculer cette formule :
+Given that in the article, the convolutional layer does not have bias parameters and activation functions, the `backward propagation` algorithm amounts to computing this formula :
 
 $$
-\frac{\delta L}{\delta filter(x,y))} = \sum_{i}^{}\sum_{j}^{}\frac{\delta L}{\delta conv(i,j)}\frac{\delta conv(i,j)}{\delta filter(x,y)}
+\frac{\delta Loss}{\delta filter(x,y))} = \sum_{i}^{}\sum_{j}^{}\frac{\delta Loss}{\delta conv(i,j)}\frac{\delta conv(i,j)}{\delta filter(x,y)}
 $$
 
 ### 2. Max Pooling layer
 
-Cette couche est constituée d'aucun neurone et ne possède pas de paramètres `bias` ou `weights`.
-Elle réduit la taille de la matrice d'entrée, en appliquant l'opération `max` sur chaque fenêtre de la matrice d'entrée.
+This layer consists of no neurons and does not have any `bias` or `weights` parameters. 
+It reduces the size of the input matrix by applying the max operation to each window of the input matrix.
 
-Son objectif est double :
+Its objective is twofold:
 
-1. Réduire la dimension.
-2. Pour chaque région, trouver le maximum.
+1. Reduce dimensionality.
+2. For each region, find the maximum.
 
 #### Forward propagation
 
-L'algorithme de forward propagation est constituée des étapes suivantes :
+The forward propagation algorithm consists of the following steps:
 
-1. Définir la taille de la fenêtre de pooling $$(pw * ph)$$.
+1. Define the size of the pooling window $$(pw * ph)$$.
 
-2. Créer une matrice de sortie de taille $$(iw / pw) * (ih / ph)$$.
+2. Create an output matrix of size $$(iw / pw) * (ih / ph)$$.
 
-3. Décomposer la matrice d'entrée en plusieurs fenêtres de taille $$(pw * ph)$$.
+3. Divide the input matrix into several windows of size  $$(pw * ph)$$.
 
-4. Pour chaque fenêtre de la matrice, trouvez le maximum et assignez cette valeur à la cellule de la matrice de sortie.
+4. For each window of the matrix, find the maximum value and assign this value to the cell of the output matrix.
 
 #### Backward propagation
 
-Etant donné que la couche de Pooling ne possède aucun paramètre d'apprentissage, weights ou bias.
+Given that the Pooling layer has no learning parameters, weights, or bias.
 
-L'algorithme de backward propagation se contente de reconstruire une matrice qui a la même taille que la dernière matrice reçue par la couche.
-Voici les grandes étapes de l'algorithme :
+The backward propagation algorithm simply reconstructs a matrix of the same size as the last matrix received by the layer. 
+Here are the main steps of the algorithm:
 
-1. Créer une matrice de sortie, de la même taille que la matrice en entrée.
+1. Create an output matrix of the same size as the input matrix.
 
-2. Décomposer la matrice en plusieurs fenêtres de taille $$(pw * ph)$$.
+2. Divide the matrix into several windows of size $$(pw * ph)$$.
 
-3. Pour chaque cellule de chaque fenêtre, si l'élément n'est pas le maximum alors mettre 0, sinon prendre le gradient de l'erreur.
+3. For each cell of each window, if the element is not the maximum, set it to 0; otherwise, take the gradient of the error.
 
 ### 3. Softmax layer
 
-La couche dense d'activation `softmax` est composé de un ou plusieurs neurones, et possède les paramètres d'apprentissages `weights` et `bias`.
-Le nombre de neurones est égale au nombre de classes à prédire.
+The activation dense layer `softmax` consists of one or more neurons and has the learning parameters `weights` and `bias`.
+The number of neurons is equal to the number of classes to predict.
 
-La fonction softmax est utilisée pour calculer les probabilités d'appartenance à chaque classe.
+The softmax function is used to calculate the probabilities of belonging to each class.
 
-Voici l'architecture d'un neurone softmax.
-
+Here is the architecture of a softmax neuron.
 
 #### Forward propagation
 
-L'algorithme de forward propagation est constituée des étapes suivantes :
+The forward propagation algorithm consists of the following steps:
 
-1. Définir le nombre de classe dans une variable `n`.
-2. Pour chaque classe, créer un neurone et initialiser son paramètre `weight`.
-3. Initialiser le paramètre `bias` de la couche.
-4. Pour chaque neurone, multiplier la matrice d'entrée par son weight, et stocker le résultat dans une variable $Weights = \sum_{i=1}^{n}xi *weighti$.
-5. Calculer la somme avec le bias et stocker le résultat dans une variable $SumWeighted = bias + Weights$.
-6. Pour finir, exécuter la fonction d'activation sur chaque classe $softmax(ci) = \frac{exp(ci)}{\sum_{i}^{n}exp(i)}$.
+1. Define the number of classes in a variable `n`.
+
+2. For each class, create a neuron and initialize its `weight` parameter.
+
+3. Initialize the layer's `bias` parameter.
+
+4. For each neuron, multiply the input matrix by its weight and store the result in a variable $$Weights = \sum_{i=1}^{n}xi *weighti$$.
+
+5. Calculate the sum with the bias and store the result in a variable $$SumWeighted = bias + Weights$$.
+
+6. Finally, execute the activation function on each class $$softmax(ci) = \frac{exp(ci)}{\sum_{i}^{n}exp(i)}$$.
 
 #### Backward propagation
 
-La couche de softmax, possède deux paramètres d'apprentissage devant être mise à jour, et une variable `learningRate` qui pondère l'importance des dérivées partielles pour mettre à jour ces paramètres.
+The softmax layer has two learning parameters that need to be updated, and a variable `learningRate` which weighs the importance of the partial derivatives to update these parameters.
 
-L'algorithme doit être capable de calculer les dérivées partielles, pour ces deux paramètres.
+The algorithm must be able to compute the partial derivatives for these two parameters.
 
 $$
 \frac{\delta Loss}{\delta weight} = \frac{\delta Loss}{\delta out} * \frac{\delta out}{\delta net} * \frac{\delta net}{\delta weight}
+$$
+
+$$
 \frac{\delta Loss}{\delta bias} = \frac{\delta Loss}{\delta out} * \frac{\delta out}{\delta bias}
 $$
 
-La dérivée $$\frac{\delta Loss}{\delta out}$$ est assez simple à calculer.
+The derivative $$\frac{\delta Loss}{\delta out}$$ is quite simple to calculate.
 
-Si la classe prédite est différente de celle attendue :
+If the predicted class is different from the expected one:
 
 $$
 \frac{\delta Loss}{\delta out(i)}=0
 $$
 
-Si la classe prédite est la même que celle attendue : 
+If the predicted class is the same as the expected one: 
 
 $$
 \frac{\delta Loss}{\delta out(i)}=\frac{-1}{pi}
 $$
 
-La dérivée $$\frac{\delta net}{\delta weight}$$ est égale à  :
+The derivative $$\frac{\delta net}{\delta weight}$$ is equals to :
 
 $$
 net = bias + \sum_{i=1}^{n}x(i)*weight(i)
@@ -350,35 +372,55 @@ net = bias + \sum_{i=1}^{n}x(i)*weight(i)
 net = input
 $$
 
-La dérivée $$\frac{\delta out}{\delta bias}$$ est égale à 1.
+The derivative $$\frac{\delta out}{\delta bias}$$ is equals to 1.
 
-La dernière dérivée est $$\frac{\delta out}{\delta net}$$ est plus complexe à calculer, si vous souhaitez une démonstration complète je vous invite à lire l'article publié sur [medium](https://medium.com/@shine160700/softmax-function-and-the-maths-behind-it-12422d07c78a).
+The last derivative, $$\frac{\delta out}{\delta net}$$, is more complex to calculate.
+If you desire a complete demonstration, I invite you to read the article published on [medium](https://medium.com/@shine160700/softmax-function-and-the-maths-behind-it-12422d07c78a).
 
-Une fois toutes ces dérivées partielles calculées, les paramètres pourront être mises à jour comme suit :
+Once all these partial derivatives are calculated, the parameters can be updated as follows:
 
 $$
 weight = weight - learningRate * \frac{\delta Loss}{\delta weight}
+$$
+
+$$
 bias = bias - learningRate * \frac{\delta Loss}{\delta bias}
 $$
 
-## Implémentation c#
+## C# implementation
 
-Le code source du projet se trouve ici.
+The source code of the C# project can be found [here](https://github.com/simpleidserver/DiveIt/tree/main/Projects/CNN).
+
+The project uses a MINST dataset from the [kaggle](https://www.kaggle.com/datasets/oddrationale/mnist-in-csv) website to train the Convolutional Neural Network.
+
+After 3 iterations performed on a dataset of 5000 entries, the achieved performance is quite satisfactory. 
+
+The accuracy is approximately 85%!
+
+## Conclusion
+
+Congratulations! You've reached the end of this article. :wink:
+
+The C# implementation is not optimal and can still be improved.
+
+For production use, I recommend using the excellent library [keras](https://keras.io/).
 
 ## Resources
 
-| Link |
-| ---- |
-| https://victorzhou.com/blog/intro-to-cnns-part-1/, CNNs, Part 1: An Introduction to Convolutional Neural Networks |
-| https://observablehq.com/@lemonnish/cross-correlation-of-2-matrices, Cross-correlation of 2 matrices |
-| https://www.ibm.com/topics/convolutional-neural-networks, What are convolutional neural networks? |
-| https://developer.nvidia.com/discover/convolution#:~:text=The%20convolution%20algorithm%20is%20often,convolution%20operation%20is%20called%20deconvolution., Convolution |
-| https://cezannec.github.io/Convolutional_Neural_Networks/, Convolutional Neural Networks |
-| https://web.pdx.edu/~jduh/courses/Archive/geog481w07/Students/Ludwig_ImageConvolution.pdf |
-| https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#fig-correlation, Convolutions for image |
-| https://python.plainenglish.io/building-a-handwritten-alphabets-classifier-using-convolutional-neural-networks-2f84a47eb3ec, Building a Handwritten Alphabets Classifier using Convolutional Neural Networks |
-| https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53, A Comprehensive Guide to Convolutional Neural Networks — the ELI5 way |
-| https://towardsdatascience.com/math-neural-network-from-scratch-in-python-d6da9f29ce65, Neural Network from scratch in Python |
-| https://victorzhou.com/blog/softmax/, Softmax |
-| https://www.sciencedirect.com/topics/computer-science/convolutional-layer, Convolutional Layer | 
-| https://medium.com/@nerdjock/deep-learning-course-lesson-5-forward-and-backward-propagation-ec8e4e6a8b92 |
+* https://observablehq.com/@lemonnish/cross-correlation-of-2-matrices, Cross-correlation of 2 matrices
+
+* https://www.ibm.com/topics/convolutional-neural-networks, What are convolutional neural networks?
+
+*  https://developer.nvidia.com/discover/convolution#:~:text=The%20convolution%20algorithm%20is%20often,convolution%20operation%20is%20called%20deconvolution., Convolution
+
+* https://web.pdx.edu/~jduh/courses/Archive/geog481w07/Students/Ludwig_ImageConvolution.pdf, Image Convolution
+
+* https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#fig-correlation, Convolutions for image
+
+* https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53, A Comprehensive Guide to Convolutional Neural Networks — the ELI5 way
+
+* https://victorzhou.com/blog/softmax/, Softmax
+
+* https://www.sciencedirect.com/topics/computer-science/convolutional-layer, Convolutional Layer
+
+* https://medium.com/@nerdjock/deep-learning-course-lesson-5-forward-and-backward-propagation-ec8e4e6a8b92, Forward and Backward Propagation

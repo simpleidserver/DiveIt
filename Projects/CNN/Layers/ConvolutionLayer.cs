@@ -72,7 +72,7 @@ namespace CNN.Layers
             foreach(var portion in portions)
             {
                 for(var f = 0; f < Neurons.Count; f++)
-                {
+                 {
                     var r = ArrayHelper.Multiply(
                         portion.Item1,
                         matrix[portion.Item3, portion.Item2, f]
