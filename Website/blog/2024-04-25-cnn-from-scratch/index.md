@@ -101,11 +101,14 @@ We will explain the various steps to train a neural network, outlined as follows
 
 1. Initialize the parameters of all layers : `weights` ou `bias`.
 2. Execute the following steps `N` times.
-2.1 For each layer, execute the `forward propagation` step.
-2.2 Calculate the error.
-2.3 For each layer, execute the `backward propagation` step.
 
-#### 1. Initialisation des paramètres
+   2.1 For each layer, execute the `forward propagation` step.
+
+   2.2 Calculate the error.
+
+   2.3 For each layer, execute the `backward propagation` step.
+
+#### 1. Initialize the parameters
 
 The learning parameters of the layers, such as `weights` and `bias`, must be initialized with random values.
 
