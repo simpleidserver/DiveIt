@@ -1,3 +1,10 @@
+---
+slug: SGD optimization
+title: Implement Convolutional Neural Network from scratch
+authors: [geekdiver]
+tags: [ML, Staticstics, .NET]
+---
+
 # Implement Convolutional Neural Network from scratch
 
 import Architecture from './images/architecture.png'
@@ -5,6 +12,7 @@ import BackPropagation from './images/backpropagation.png'
 import CnnArchitecture from './images/cnn-architecture.png'
 import NeuronConvolutional from './images/neuron-conv.png'
 import Banner from './images/banner.png'
+import GiscusComponent from '@site/src/components/GiscusComponent';
 
 <div style={{textAlign: 'center'}}>
     <img src={Banner} />
@@ -427,3 +435,5 @@ For production use, I recommend using the excellent library [keras](https://kera
 * https://www.sciencedirect.com/topics/computer-science/convolutional-layer, Convolutional Layer
 
 * https://medium.com/@nerdjock/deep-learning-course-lesson-5-forward-and-backward-propagation-ec8e4e6a8b92, Forward and Backward Propagation
+
+<GiscusComponent />
