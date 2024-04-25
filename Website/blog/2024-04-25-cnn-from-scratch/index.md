@@ -1,5 +1,5 @@
 ---
-slug: SGD optimization
+slug: Implement Convolutional Neural Network from scratch
 title: Implement Convolutional Neural Network from scratch
 authors: [geekdiver]
 tags: [ML, Staticstics, .NET]
