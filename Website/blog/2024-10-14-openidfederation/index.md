@@ -1,6 +1,6 @@
 ---
 slug: openid-federation
-title: OPENID federation
+title: OPENID Federation
 authors: [geekdiver]
 tags: [OPENID, FEDERATION]
 enableComments: true
