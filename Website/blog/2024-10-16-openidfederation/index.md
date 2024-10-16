@@ -145,7 +145,7 @@ In the end, the trust chain will contain three records and have the following st
 The Relying Party will automatically be registered with the Identity Provider. 
 This process is known in OpenID Federation as the [Automatic Registration workflow](https://openid.net/specs/openid-federation-1_0.html#name-automatic-registration).
 
-There is another method for Client Registration, which can be found in the chapter on [Client Registration]("#relying-party-registration").
+There is another method for Client Registration, which can be found in the chapter on [Client Registration](#relying-party-registration).
 
 If the Relying Party is already known to the Identity Provider and the workflow is executed a second time, the Identity Provider will check if the trust chain is still valid.
 If necessary, the Relying Party's settings will be updated with properties extracted from the  `openid_relying_party` Entity Type.
