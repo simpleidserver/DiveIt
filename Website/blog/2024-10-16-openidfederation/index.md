@@ -1,6 +1,6 @@
 ---
 slug: openid-federation
-title: OPENID federation
+title: OPENID Federation
 authors: [geekdiver]
 tags: [OPENID, FEDERATION]
 enableComments: true
@@ -168,7 +168,7 @@ The algorithm to check the Federation Policy consists of the following steps:
 
 2. Retrieve all Entity Statements from the trust chain and order them from the highest node in the hierarchy (Trust Anchor) to the lowest node (Leaf Entity).
 
-3. or each ordered Entity Statement, fetch the `metadata_policy` parameter.
+3. For each ordered Entity Statement, fetch the `metadata_policy` parameter.
 
    3.1 Retrieve the metadata policy of the previous Entity Statement.
 
